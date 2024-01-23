@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(VulkanIntro)
 
+find_package(Vulkan REQUIRED)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -65,4 +67,5 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/sr
 target_link_libraries(${PROJECT_NAME} PUBLIC 
 	glfw
     glm
+    ${Vulkan_LIBRARIES}
 )

@@ -8,4 +8,5 @@ add_subdirectory(glm)
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
     glfw/include
     glm
+    ${Vulkan_INCLUDE_DIRS}
 )
