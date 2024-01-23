@@ -4,4 +4,5 @@ src/main.cpp
 
 src/Window/Window.hpp
 src/Window/Window.cpp
-)
+
+PARENT_SCOPE)
