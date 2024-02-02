@@ -1,8 +1,19 @@
+#include "VulkanAPI/VulkanApp.hpp"
+
+#include <stdexcept>
 #include <iostream>
 
 int main()
 {
-	std::cout << "Hello World!" << std::endl;
+	try
+	{
+		VulkanApp app;
+		app.Run();
+    } catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
 
-	return 0;
+    return EXIT_SUCCESS;
 }
