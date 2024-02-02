@@ -2,8 +2,6 @@
 
 #include "VulkanBackend.hpp"
 
-#include <vulkan/vulkan.h>
-
 VkInstance instance;
 
 void VulkanApp::Run()

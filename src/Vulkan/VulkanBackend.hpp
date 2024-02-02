@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <vector>
 
+#include <vulkan/vulkan.h>
+
 void CreateInstance(void* instance);
 void DestroyInstance(void* instance);
 

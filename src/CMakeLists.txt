@@ -5,12 +5,12 @@ src/main.cpp
 src/Window/Window.hpp
 src/Window/Window.cpp
 
-src/VulkanAPI/VulkanBackend.hpp
+src/Vulkan/VulkanBackend.hpp
 
-src/VulkanAPI/VulkanInstance.cpp
-src/VulkanAPI/VulkanExtension.cpp
+src/Vulkan/VulkanInstance.cpp
+src/Vulkan/VulkanExtension.cpp
 
-src/VulkanAPI/VulkanApp.hpp
-src/VulkanAPI/VulkanApp.cpp
+src/Vulkan/VulkanApp.hpp
+src/Vulkan/VulkanApp.cpp
 
 PARENT_SCOPE)

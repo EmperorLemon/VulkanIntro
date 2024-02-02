@@ -4,7 +4,6 @@
 
 #include <vulkan/vulkan_core.h>
 
-
 bool CheckValidationLayerSupport(const std::vector<const char*>& validationLayers)
 {
 	uint32_t layerCount;
