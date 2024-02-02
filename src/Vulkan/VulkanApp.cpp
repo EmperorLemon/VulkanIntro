@@ -3,6 +3,13 @@
 #include "VulkanBackend.hpp"
 
 VkInstance instance;
+VkDebugUtilsMessengerEXT debugMessenger;
+
+#ifdef NDEBUG
+constexpr bool enableValidationLayers = false;
+#else
+constexpr bool enableValidationLayers = true;
+#endif
 
 void VulkanApp::Run()
 {
@@ -15,7 +22,8 @@ void VulkanApp::Run()
 
 void VulkanApp::InitApp()
 {
-	CreateInstance(instance);
+	CreateInstance(instance, enableValidationLayers);
+	SetupDebugMessenger(instance, debugMessenger, enableValidationLayers);
 }
 
 void VulkanApp::UpdateApp()
@@ -28,6 +36,9 @@ void VulkanApp::UpdateApp()
 
 void VulkanApp::CleanupApp()
 {
+	if (enableValidationLayers)
+		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+
 	DestroyInstance(instance);
 	DestroyWindow(m_window);
 	TerminateWindowLibrary();

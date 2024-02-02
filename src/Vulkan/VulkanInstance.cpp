@@ -1,17 +1,10 @@
 #include "VulkanBackend.hpp"
 
-#include <vulkan/vulkan_core.h>
 #include <stdexcept>
 
-void CreateInstance(void* instance)
+void CreateInstance(VkInstance& instance, const bool enableValidationLayers)
 {
 	const std::vector validationLayers = { "VK_LAYER_KHRONOS_validation" };
-
-#ifdef NDEBUG
-	constexpr bool enableValidationLayers = false;
-#else
-	constexpr bool enableValidationLayers = true;
-#endif
 
 	if (enableValidationLayers && !CheckValidationLayerSupport(validationLayers))
 		throw std::runtime_error("Validation layers requested, but not available!");
@@ -38,19 +31,27 @@ void CreateInstance(void* instance)
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
+	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+
 	if (enableValidationLayers)
 	{
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
+
+		PopulateDebugMessengerCreateInfo(debugCreateInfo);
+		createInfo.pNext = &debugCreateInfo;
 	}
 	else
+	{
 		createInfo.enabledLayerCount = 0u;
+		createInfo.pNext = nullptr;
+	}
 
-	if (vkCreateInstance(&createInfo, nullptr, reinterpret_cast<VkInstance*>(&instance)) != VK_SUCCESS)
-		throw std::runtime_error("Failed to Create Instance!");
+	if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)
+		throw std::runtime_error("Failed to create instance!");
 }
 
-void DestroyInstance(void* instance)
+void DestroyInstance(const VkInstance& instance)
 {
-	vkDestroyInstance(static_cast<VkInstance>(instance), nullptr);
+	vkDestroyInstance(instance, nullptr);
 }
