@@ -11,7 +11,11 @@
 //#include <vulkan/vulkan_win32.h>
 
 VkSurfaceKHR surface = VK_NULL_HANDLE;
+
 VkSwapchainKHR swapChain = VK_NULL_HANDLE;
+std::vector<VkImage> swapChainImages;
+VkFormat swapChainImageFormat;
+VkExtent2D swapChainExtent;
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
@@ -81,8 +85,6 @@ void CreateSwapChain(const VkPhysicalDevice& physicalDevice, const VkDevice& log
 	else
 	{
 		createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		createInfo.queueFamilyIndexCount = 0; // optional
-		createInfo.pQueueFamilyIndices = nullptr; // optional
 	}
 
 	createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
@@ -93,6 +95,13 @@ void CreateSwapChain(const VkPhysicalDevice& physicalDevice, const VkDevice& log
 
 	if (vkCreateSwapchainKHR(logicalDevice, &createInfo, nullptr, &swapChain) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create swap chain!");
+
+	vkGetSwapchainImagesKHR(logicalDevice, swapChain, &imageCount, nullptr);
+	swapChainImages.resize(imageCount);
+	vkGetSwapchainImagesKHR(logicalDevice, swapChain, &imageCount, swapChainImages.data());
+
+	swapChainImageFormat = surfaceFormat.format;
+	swapChainExtent = extent;
 }
 
 void DestroySwapChain(const VkDevice& device)
