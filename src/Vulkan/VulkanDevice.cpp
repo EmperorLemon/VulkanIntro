@@ -1,5 +1,7 @@
 #include "VulkanBackend.hpp"
 
+#include <set>
+
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 VkDevice logicalDevice = VK_NULL_HANDLE;
 
@@ -34,15 +36,23 @@ void CreateLogicalDevice(const bool enableValidationLayers, const std::vector<co
 {
 	const QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
 
-	VkDeviceQueueCreateInfo queueCreateInfo = {};
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+	std::set uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
-	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	float queuePriority = 1.0f;
 
-	queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-	queueCreateInfo.queueCount = 1;
+	for (uint32_t queueFamily : uniqueQueueFamilies) 
+	{
+		VkDeviceQueueCreateInfo queueCreateInfo = {};
 
-	constexpr float queuePriority = 1.0f;
-	queueCreateInfo.pQueuePriorities = &queuePriority;
+		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount = 1;
+		queueCreateInfo.pQueuePriorities = &queuePriority;
+
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
 
 	const VkPhysicalDeviceFeatures deviceFeatures = {};
 
@@ -50,8 +60,8 @@ void CreateLogicalDevice(const bool enableValidationLayers, const std::vector<co
 
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-	createInfo.pQueueCreateInfos = &queueCreateInfo;
-	createInfo.queueCreateInfoCount = 1;
+	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
 	createInfo.pEnabledFeatures = &deviceFeatures;
 
