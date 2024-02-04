@@ -2,7 +2,9 @@
 
 #include <stdexcept>
 
-void CreateInstance(VkInstance& instance, const bool enableValidationLayers)
+VkInstance instance = VK_NULL_HANDLE;
+
+void CreateInstance(const bool enableValidationLayers)
 {
 	const auto& validationLayers = GetValidationLayers();
 
@@ -51,7 +53,12 @@ void CreateInstance(VkInstance& instance, const bool enableValidationLayers)
 		throw std::runtime_error("Failed to create instance!");
 }
 
-void DestroyInstance(const VkInstance& instance)
+void DestroyInstance()
 {
 	vkDestroyInstance(instance, nullptr);
+}
+
+const VkInstance& GetInstance()
+{
+	return instance;
 }

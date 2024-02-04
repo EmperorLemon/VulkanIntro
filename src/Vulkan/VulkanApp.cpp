@@ -3,9 +3,6 @@
 #include "VulkanBackend.hpp"
 #include "Window/GLFWwindow.hpp"
 
-VkInstance instance = VK_NULL_HANDLE;
-VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
-
 #ifdef NDEBUG
 constexpr bool enableValidationLayers = false;
 #else
@@ -23,8 +20,11 @@ void VulkanApp::Run()
 
 void VulkanApp::InitApp()
 {
-	CreateInstance(instance, enableValidationLayers);
-	SetupDebugMessenger(instance, debugMessenger, enableValidationLayers);
+	CreateInstance(enableValidationLayers);
+
+	const auto& instance = GetInstance();
+
+	SetupDebugMessenger(instance, enableValidationLayers);
 	CreateWindowSurface(instance, m_window);
 	SelectPhysicalDevice(instance);
 	CreateLogicalDevice(enableValidationLayers);
@@ -44,11 +44,13 @@ void VulkanApp::CleanupApp()
 	DestroySwapChain(GetLogicalDevice());
 	DestroyLogicalDevice();
 
+	const auto& instance = GetInstance();
+
 	if (enableValidationLayers)
-		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+		DestroyDebugUtilsMessengerEXT(instance, nullptr);
 
 	DestroyWindowSurface(instance);
-	DestroyInstance(instance);
+	DestroyInstance();
 	DestroyWindow(m_window);
 	TerminateWindowLibrary();
 }

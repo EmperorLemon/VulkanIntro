@@ -23,8 +23,9 @@ struct SwapChainSupportDetails
 	std::vector<VkPresentModeKHR> presentModes; // Available presentation modes
 };
 
-void CreateInstance(VkInstance& instance, bool enableValidationLayers);
-void DestroyInstance(const VkInstance& instance);
+void CreateInstance(bool enableValidationLayers);
+void DestroyInstance();
+const VkInstance& GetInstance();
 
 bool CheckValidationLayerSupport();
 bool CheckDeviceExtensionSupport(const VkPhysicalDevice& device);
@@ -80,8 +81,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityF
 	return VK_FALSE;
 }
 
-void SetupDebugMessenger(VkInstance instance, VkDebugUtilsMessengerEXT& debugMessenger, bool enableValidationLayers);
+void SetupDebugMessenger(VkInstance instance, bool enableValidationLayers);
 void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
-void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator);
+const VkDebugUtilsMessengerEXT& GetDebugMessenger();

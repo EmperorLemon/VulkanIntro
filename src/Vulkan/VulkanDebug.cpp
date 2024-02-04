@@ -1,6 +1,8 @@
 #include "VulkanBackend.hpp"
 
-void SetupDebugMessenger(const VkInstance instance, VkDebugUtilsMessengerEXT& debugMessenger, const bool enableValidationLayers)
+VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
+
+void SetupDebugMessenger(const VkInstance instance, const bool enableValidationLayers)
 {
 	if (!enableValidationLayers) return;
 
@@ -31,8 +33,13 @@ VkResult CreateDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUt
 	return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
-void DestroyDebugUtilsMessengerEXT(const VkInstance instance, const VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator)
+void DestroyDebugUtilsMessengerEXT(const VkInstance instance, const VkAllocationCallbacks* pAllocator)
 {
 	if (const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")))
 		func(instance, debugMessenger, pAllocator);
+}
+
+const VkDebugUtilsMessengerEXT& GetDebugMessenger()
+{
+	return debugMessenger;
 }

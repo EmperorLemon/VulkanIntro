@@ -10,8 +10,8 @@
 //
 //#include <vulkan/vulkan_win32.h>
 
-VkSurfaceKHR surface;
-VkSwapchainKHR swapChain;
+VkSurfaceKHR surface = VK_NULL_HANDLE;
+VkSwapchainKHR swapChain = VK_NULL_HANDLE;
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
