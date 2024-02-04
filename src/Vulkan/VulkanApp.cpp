@@ -28,6 +28,7 @@ void VulkanApp::InitApp()
 	CreateWindowSurface(instance, m_window);
 	SelectPhysicalDevice(instance);
 	CreateLogicalDevice(enableValidationLayers);
+	CreateSwapChain(GetPhysicalDevice(), GetLogicalDevice(), m_window);
 }
 
 void VulkanApp::UpdateApp()
@@ -40,6 +41,7 @@ void VulkanApp::UpdateApp()
 
 void VulkanApp::CleanupApp()
 {
+	DestroySwapChain(GetLogicalDevice());
 	DestroyLogicalDevice();
 
 	if (enableValidationLayers)

@@ -16,6 +16,13 @@ struct QueueFamilyIndices
 	[[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value() && presentFamily.has_value(); }
 };
 
+struct SwapChainSupportDetails
+{
+	VkSurfaceCapabilitiesKHR capabilities; // Basic surface capabilities (min/max number of images in swap chain, min/max width and height of images)
+	std::vector<VkSurfaceFormatKHR> formats; // Surface formats (pixel format, color space)
+	std::vector<VkPresentModeKHR> presentModes; // Available presentation modes
+};
+
 void CreateInstance(VkInstance& instance, bool enableValidationLayers);
 void DestroyInstance(const VkInstance& instance);
 
@@ -28,6 +35,8 @@ const std::vector<const char*>& GetValidationLayers();
 void SelectPhysicalDevice(const VkInstance& instance);
 void CreateLogicalDevice(bool enableValidationLayers);
 void DestroyLogicalDevice();
+const VkPhysicalDevice& GetPhysicalDevice();
+const VkDevice& GetLogicalDevice();
 
 bool IsDeviceSuitable(const VkPhysicalDevice& device);
 QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
@@ -36,6 +45,13 @@ void CreateWindowSurface(const VkInstance& instance, const Window& window);
 void DestroyWindowSurface(const VkInstance& instance);
 const VkSurfaceKHR& GetWindowSurface();
 const char** GetRequiredWindowExtensions(uint32_t* count);
+
+void CreateSwapChain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window);
+void DestroySwapChain(const VkDevice& device);
+SwapChainSupportDetails QuerySwapChainSupport(const VkPhysicalDevice& device);
+VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const Window& window);
 
 /**
  * \brief A Debug Callback function

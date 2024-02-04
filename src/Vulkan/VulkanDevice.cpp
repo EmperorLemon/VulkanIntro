@@ -90,13 +90,31 @@ void DestroyLogicalDevice()
 	vkDestroyDevice(logicalDevice, nullptr);
 }
 
+const VkPhysicalDevice& GetPhysicalDevice()
+{
+	return physicalDevice;
+}
+
+const VkDevice& GetLogicalDevice()
+{
+	return logicalDevice;
+}
+
 bool IsDeviceSuitable(const VkPhysicalDevice& device)
 {
 	const QueueFamilyIndices indices = FindQueueFamilies(device);
 
 	const bool extensionsSupported = CheckDeviceExtensionSupport(device);
 
-	return indices.IsComplete() && extensionsSupported;
+	bool swapChainAdequate = false;
+
+	if (extensionsSupported)
+	{
+		const SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(device);
+		swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+	}
+
+	return indices.IsComplete() && extensionsSupported && swapChainAdequate;
 }
 
 QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device)
