@@ -49,6 +49,8 @@ const char** GetRequiredWindowExtensions(uint32_t* count);
 
 void CreateSwapChain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window);
 void DestroySwapChain(const VkDevice& device);
+void CreateImageViews(const VkDevice& device);
+void DestroyImageViews(const VkDevice& device);
 SwapChainSupportDetails QuerySwapChainSupport(const VkPhysicalDevice& device);
 VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);

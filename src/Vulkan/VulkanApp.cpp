@@ -28,7 +28,12 @@ void VulkanApp::InitApp()
 	CreateWindowSurface(instance, m_window);
 	SelectPhysicalDevice(instance);
 	CreateLogicalDevice(enableValidationLayers);
-	CreateSwapChain(GetPhysicalDevice(), GetLogicalDevice(), m_window);
+
+	const auto& physicalDevice = GetPhysicalDevice();
+	const auto& logicalDevice = GetLogicalDevice();
+
+	CreateSwapChain(physicalDevice, logicalDevice, m_window);
+	CreateImageViews(logicalDevice);
 }
 
 void VulkanApp::UpdateApp()
@@ -41,7 +46,10 @@ void VulkanApp::UpdateApp()
 
 void VulkanApp::CleanupApp()
 {
-	DestroySwapChain(GetLogicalDevice());
+	const auto& logicalDevice = GetLogicalDevice();
+
+	DestroyImageViews(logicalDevice);
+	DestroySwapChain(logicalDevice);
 	DestroyLogicalDevice();
 
 	const auto& instance = GetInstance();
