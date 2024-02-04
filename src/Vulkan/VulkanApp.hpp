@@ -6,6 +6,7 @@ class VulkanApp
 {
 public:
 	void Run();
+	void Test() noexcept;
 private:
 	void InitApp();
 	void UpdateApp();

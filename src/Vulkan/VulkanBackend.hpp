@@ -56,6 +56,8 @@ VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>
 VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const Window& window);
 
+void CreateGraphicsPipeline();
+
 /**
  * \brief A Debug Callback function
  * \param messageSeverity The first parameter specifies the severity of the message, which is one of the following flags:
