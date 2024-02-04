@@ -2,8 +2,8 @@
 
 #include "VulkanBackend.hpp"
 
-VkInstance instance;
-VkDebugUtilsMessengerEXT debugMessenger;
+VkInstance instance = VK_NULL_HANDLE;
+VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
 
 #ifdef NDEBUG
 constexpr bool enableValidationLayers = false;
@@ -24,6 +24,8 @@ void VulkanApp::InitApp()
 {
 	CreateInstance(instance, enableValidationLayers);
 	SetupDebugMessenger(instance, debugMessenger, enableValidationLayers);
+	SelectPhysicalDevice(instance);
+	//CreateLogicalDevice(instance)
 }
 
 void VulkanApp::UpdateApp()

@@ -9,6 +9,7 @@ src/Vulkan/VulkanBackend.hpp
 
 src/Vulkan/VulkanInstance.cpp
 src/Vulkan/VulkanExtension.cpp
+src/Vulkan/VulkanDevice.cpp
 src/Vulkan/VulkanDebug.cpp
 
 src/Vulkan/VulkanApp.hpp

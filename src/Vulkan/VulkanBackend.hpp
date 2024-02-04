@@ -2,14 +2,29 @@
 
 #include <vector>
 #include <iostream>
+#include <optional>
 
 #include <vulkan/vulkan.h>
+
+struct QueueFamilyIndices
+{
+	std::optional<uint32_t> graphicsFamily;
+
+	[[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value(); }
+};
 
 void CreateInstance(VkInstance& instance, bool enableValidationLayers);
 void DestroyInstance(const VkInstance& instance);
 
 bool CheckValidationLayerSupport(const std::vector<const char*>& validationLayers);
 std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers);
+
+void SelectPhysicalDevice(const VkInstance& instance);
+bool IsDeviceSuitable(const VkPhysicalDevice& device);
+bool IsDeviceSuitable(const VkDevice& device);
+QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
+
+void CreateLogicalDevice(const VkInstance& instance, VkDevice& device);
 
 /**
  * \brief A Debug Callback function
