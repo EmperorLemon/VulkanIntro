@@ -30,6 +30,11 @@ void DestroyWindowSurface(const VkInstance& instance)
 	vkDestroySurfaceKHR(instance, surface, nullptr);
 }
 
+const VkSurfaceKHR& GetWindowSurface()
+{
+	return surface;
+}
+
 const char** GetRequiredWindowExtensions(uint32_t* count)
 {
 	return glfwGetRequiredInstanceExtensions(count);

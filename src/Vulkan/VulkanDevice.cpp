@@ -2,7 +2,9 @@
 
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 VkDevice logicalDevice = VK_NULL_HANDLE;
+
 VkQueue graphicsQueue = VK_NULL_HANDLE;
+VkQueue presentQueue = VK_NULL_HANDLE;
 
 void SelectPhysicalDevice(const VkInstance& instance)
 {
@@ -67,6 +69,7 @@ void CreateLogicalDevice(const bool enableValidationLayers, const std::vector<co
 		throw std::runtime_error("Failed to create logical device!");
 
 	vkGetDeviceQueue(logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
+	vkGetDeviceQueue(logicalDevice, indices.presentFamily.value(), 0, &presentQueue);
 }
 
 void DestroyLogicalDevice()
@@ -102,6 +105,12 @@ QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device)
 	{
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			indices.graphicsFamily = i;
+
+		VkBool32 presentSupport = false;
+		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, GetWindowSurface(), &presentSupport);
+
+		if (presentSupport)
+			indices.presentFamily = i;
 
 		if (indices.IsComplete())
 			break;

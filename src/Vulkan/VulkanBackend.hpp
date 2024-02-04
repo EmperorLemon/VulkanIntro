@@ -11,8 +11,9 @@
 struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
+	std::optional<uint32_t> presentFamily;
 
-	[[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value(); }
+	[[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value() && presentFamily.has_value(); }
 };
 
 void CreateInstance(VkInstance& instance, bool enableValidationLayers, const std::vector<const char*>& validationLayers);
@@ -31,6 +32,7 @@ QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window);
 void DestroyWindowSurface(const VkInstance& instance);
+const VkSurfaceKHR& GetWindowSurface();
 const char** GetRequiredWindowExtensions(uint32_t* count);
 
 /**
