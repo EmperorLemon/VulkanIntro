@@ -2,14 +2,12 @@
 
 #include <stdexcept>
 
-void CreateInstance(VkInstance& instance, const bool enableValidationLayers)
+void CreateInstance(VkInstance& instance, const bool enableValidationLayers, const std::vector<const char*>& validationLayers)
 {
-	const std::vector validationLayers = { "VK_LAYER_KHRONOS_validation" };
-
 	if (enableValidationLayers && !CheckValidationLayerSupport(validationLayers))
 		throw std::runtime_error("Validation layers requested, but not available!");
 
-	VkApplicationInfo appInfo{};
+	VkApplicationInfo appInfo = {};
 
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 
@@ -31,7 +29,7 @@ void CreateInstance(VkInstance& instance, const bool enableValidationLayers)
 	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
-	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
 
 	if (enableValidationLayers)
 	{

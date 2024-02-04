@@ -27,6 +27,50 @@ void SelectPhysicalDevice(const VkInstance& instance)
 		throw std::runtime_error("Failed to find a suitable GPU!");
 }
 
+void CreateLogicalDevice(const bool enableValidationLayers, const std::vector<const char*>& validationLayers)
+{
+	const QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
+
+	VkDeviceQueueCreateInfo queueCreateInfo = {};
+
+	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+
+	queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+	queueCreateInfo.queueCount = 1;
+
+	constexpr float queuePriority = 1.0f;
+	queueCreateInfo.pQueuePriorities = &queuePriority;
+
+	const VkPhysicalDeviceFeatures deviceFeatures = {};
+
+	VkDeviceCreateInfo createInfo = {};
+
+	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+	createInfo.pQueueCreateInfos = &queueCreateInfo;
+	createInfo.queueCreateInfoCount = 1;
+
+	createInfo.pEnabledFeatures = &deviceFeatures;
+
+	createInfo.enabledExtensionCount = 0;
+
+	if (enableValidationLayers)
+	{
+		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		createInfo.ppEnabledLayerNames = validationLayers.data();
+	}
+	else
+		createInfo.enabledLayerCount = 0;
+
+	if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice) != VK_SUCCESS)
+		throw std::runtime_error("Failed to create logical device!");
+}
+
+void DestroyLogicalDevice()
+{
+	vkDestroyDevice(logicalDevice, nullptr);
+}
+
 bool IsDeviceSuitable(const VkPhysicalDevice& device)
 {
 	const QueueFamilyIndices indices = FindQueueFamilies(device);
