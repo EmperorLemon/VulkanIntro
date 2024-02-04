@@ -2,6 +2,7 @@
 
 VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 VkDevice logicalDevice = VK_NULL_HANDLE;
+VkQueue graphicsQueue = VK_NULL_HANDLE;
 
 void SelectPhysicalDevice(const VkInstance& instance)
 {
@@ -64,6 +65,8 @@ void CreateLogicalDevice(const bool enableValidationLayers, const std::vector<co
 
 	if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create logical device!");
+
+	vkGetDeviceQueue(logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
 }
 
 void DestroyLogicalDevice()
