@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Window/Window.hpp"
+
 #include <vector>
-#include <iostream>
+#include <iostream> // TODO: Remove this
 #include <optional>
 
 #include <vulkan/vulkan.h>
@@ -27,6 +29,9 @@ bool IsDeviceSuitable(const VkPhysicalDevice& device);
 bool IsDeviceSuitable(const VkDevice& device);
 QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
 
+void CreateWindowSurface(const VkInstance& instance, const Window& window);
+void DestroyWindowSurface(const VkInstance& instance);
+const char** GetRequiredWindowExtensions(uint32_t* count);
 
 /**
  * \brief A Debug Callback function

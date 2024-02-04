@@ -1,4 +1,4 @@
-#include "Window.hpp"
+#include "GLFWwindow.hpp"
 
 #include <GLFW/glfw3.h>
 
@@ -32,11 +32,6 @@ void UpdateWindow(const Window& window)
 void DestroyWindow(const Window& window)
 {
 	glfwDestroyWindow(static_cast<GLFWwindow*>(window.window));
-}
-
-const char** GetRequiredWindowExtensions(uint32_t* count)
-{
-	return glfwGetRequiredInstanceExtensions(count);
 }
 
 bool CanCloseWindow(const Window& window)

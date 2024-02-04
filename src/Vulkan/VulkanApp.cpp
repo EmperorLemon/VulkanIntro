@@ -1,6 +1,7 @@
 #include "VulkanApp.hpp"
 
 #include "VulkanBackend.hpp"
+#include "Window/GLFWwindow.hpp"
 
 VkInstance instance = VK_NULL_HANDLE;
 VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
@@ -26,6 +27,7 @@ void VulkanApp::InitApp()
 {
 	CreateInstance(instance, enableValidationLayers, validationLayers);
 	SetupDebugMessenger(instance, debugMessenger, enableValidationLayers);
+	CreateWindowSurface(instance, m_window);
 	SelectPhysicalDevice(instance);
 	CreateLogicalDevice(enableValidationLayers, validationLayers);
 }
@@ -45,6 +47,7 @@ void VulkanApp::CleanupApp()
 	if (enableValidationLayers)
 		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 
+	DestroyWindowSurface(instance);
 	DestroyInstance(instance);
 	DestroyWindow(m_window);
 	TerminateWindowLibrary();

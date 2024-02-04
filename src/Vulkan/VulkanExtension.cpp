@@ -1,7 +1,5 @@
 #include "VulkanBackend.hpp"
 
-#include "Window/Window.hpp"
-
 bool CheckValidationLayerSupport(const std::vector<const char*>& validationLayers)
 {
 	uint32_t layerCount;

@@ -3,12 +3,14 @@ set(SOURCES
 src/main.cpp
 
 src/Window/Window.hpp
-src/Window/Window.cpp
+src/Window/GLFWwindow.hpp
+src/Window/GLFWwindow.cpp
 
 src/Vulkan/VulkanBackend.hpp
 
 src/Vulkan/VulkanInstance.cpp
 src/Vulkan/VulkanExtension.cpp
+src/Vulkan/VulkanWindow.cpp
 src/Vulkan/VulkanDevice.cpp
 src/Vulkan/VulkanDebug.cpp
 
