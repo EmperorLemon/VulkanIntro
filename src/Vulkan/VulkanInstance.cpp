@@ -2,9 +2,11 @@
 
 #include <stdexcept>
 
-void CreateInstance(VkInstance& instance, const bool enableValidationLayers, const std::vector<const char*>& validationLayers)
+void CreateInstance(VkInstance& instance, const bool enableValidationLayers)
 {
-	if (enableValidationLayers && !CheckValidationLayerSupport(validationLayers))
+	const auto& validationLayers = GetValidationLayers();
+
+	if (enableValidationLayers && !CheckValidationLayerSupport())
 		throw std::runtime_error("Validation layers requested, but not available!");
 
 	VkApplicationInfo appInfo = {};

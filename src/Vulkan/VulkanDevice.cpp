@@ -32,7 +32,7 @@ void SelectPhysicalDevice(const VkInstance& instance)
 		throw std::runtime_error("Failed to find a suitable GPU!");
 }
 
-void CreateLogicalDevice(const bool enableValidationLayers, const std::vector<const char*>& validationLayers)
+void CreateLogicalDevice(const bool enableValidationLayers)
 {
 	const QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
 
@@ -65,10 +65,13 @@ void CreateLogicalDevice(const bool enableValidationLayers, const std::vector<co
 
 	createInfo.pEnabledFeatures = &deviceFeatures;
 
-	createInfo.enabledExtensionCount = 0;
+	const auto& deviceExtensions = GetDeviceExtensions();
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+	createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
 	if (enableValidationLayers)
 	{
+		const auto& validationLayers = GetValidationLayers();
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 	}
@@ -91,12 +94,9 @@ bool IsDeviceSuitable(const VkPhysicalDevice& device)
 {
 	const QueueFamilyIndices indices = FindQueueFamilies(device);
 
-	return indices.IsComplete();
-}
+	const bool extensionsSupported = CheckDeviceExtensionSupport(device);
 
-bool IsDeviceSuitable(const VkDevice& device)
-{
-	return true;
+	return indices.IsComplete() && extensionsSupported;
 }
 
 QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device)

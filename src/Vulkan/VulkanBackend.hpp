@@ -16,18 +16,20 @@ struct QueueFamilyIndices
 	[[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value() && presentFamily.has_value(); }
 };
 
-void CreateInstance(VkInstance& instance, bool enableValidationLayers, const std::vector<const char*>& validationLayers);
+void CreateInstance(VkInstance& instance, bool enableValidationLayers);
 void DestroyInstance(const VkInstance& instance);
 
-bool CheckValidationLayerSupport(const std::vector<const char*>& validationLayers);
+bool CheckValidationLayerSupport();
+bool CheckDeviceExtensionSupport(const VkPhysicalDevice& device);
 std::vector<const char*> GetRequiredExtensions(bool enableValidationLayers);
+const std::vector<const char*>& GetDeviceExtensions();
+const std::vector<const char*>& GetValidationLayers();
 
 void SelectPhysicalDevice(const VkInstance& instance);
-void CreateLogicalDevice(bool enableValidationLayers, const std::vector<const char*>& validationLayers);
+void CreateLogicalDevice(bool enableValidationLayers);
 void DestroyLogicalDevice();
 
 bool IsDeviceSuitable(const VkPhysicalDevice& device);
-bool IsDeviceSuitable(const VkDevice& device);
 QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window);

@@ -12,8 +12,6 @@ constexpr bool enableValidationLayers = false;
 constexpr bool enableValidationLayers = true;
 #endif
 
-const std::vector validationLayers = { "VK_LAYER_KHRONOS_validation" };
-
 void VulkanApp::Run()
 {
 	InitWindowLibrary();
@@ -25,11 +23,11 @@ void VulkanApp::Run()
 
 void VulkanApp::InitApp()
 {
-	CreateInstance(instance, enableValidationLayers, validationLayers);
+	CreateInstance(instance, enableValidationLayers);
 	SetupDebugMessenger(instance, debugMessenger, enableValidationLayers);
 	CreateWindowSurface(instance, m_window);
 	SelectPhysicalDevice(instance);
-	CreateLogicalDevice(enableValidationLayers, validationLayers);
+	CreateLogicalDevice(enableValidationLayers);
 }
 
 void VulkanApp::UpdateApp()

@@ -1,6 +1,11 @@
 #include "VulkanBackend.hpp"
 
-bool CheckValidationLayerSupport(const std::vector<const char*>& validationLayers)
+#include <set>
+
+const std::vector validationLayers = { "VK_LAYER_KHRONOS_validation" };
+const std::vector deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+
+bool CheckValidationLayerSupport()
 {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -28,6 +33,22 @@ bool CheckValidationLayerSupport(const std::vector<const char*>& validationLayer
 	return true;
 }
 
+bool CheckDeviceExtensionSupport(const VkPhysicalDevice& device)
+{
+	uint32_t extensionCount;
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+	std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+	for (const auto& extension : availableExtensions)
+		requiredExtensions.erase(extension.extensionName);
+
+	return requiredExtensions.empty();
+}
+
 std::vector<const char*> GetRequiredExtensions(const bool enableValidationLayers)
 {
 	uint32_t extensionCount = 0u;
@@ -39,4 +60,14 @@ std::vector<const char*> GetRequiredExtensions(const bool enableValidationLayers
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 	return extensions;
+}
+
+const std::vector<const char*>& GetDeviceExtensions()
+{
+	return deviceExtensions;
+}
+
+const std::vector<const char*>& GetValidationLayers()
+{
+	return validationLayers;
 }
