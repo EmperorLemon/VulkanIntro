@@ -9,10 +9,6 @@ constexpr bool enableValidationLayers = false;
 constexpr bool enableValidationLayers = true;
 #endif
 
-#include <shaderc/shaderc.hpp>
-
-shaderc::Compiler compiler;
-
 void VulkanApp::Run()
 {
 	InitWindowLibrary();
@@ -38,7 +34,7 @@ void VulkanApp::InitApp()
 
 	CreateSwapChain(physicalDevice, logicalDevice, m_window);
 	CreateImageViews(logicalDevice);
-	CreateGraphicsPipeline();
+	CreateGraphicsPipeline(logicalDevice);
 }
 
 void VulkanApp::UpdateApp()

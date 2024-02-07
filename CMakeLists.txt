@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(VulkanIntro)
 
-find_package(Vulkan REQUIRED)
+find_package(Vulkan COMPONENTS shaderc_combined SPIRV-Tools REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -68,4 +68,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	glfw
     glm
     ${Vulkan_LIBRARIES}
+    Vulkan::shaderc_combined
 )
+
+add_custom_command(TARGET VulkanIntro POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E create_symlink
+                   ${CMAKE_CURRENT_SOURCE_DIR}/assets $<TARGET_FILE_DIR:VulkanIntro>/assets)

@@ -56,7 +56,10 @@ VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>
 VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const Window& window);
 
-void CreateGraphicsPipeline();
+void CreateGraphicsPipeline(const VkDevice& device);
+
+VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
+VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, const VkShaderModule& module);
 
 /**
  * \brief A Debug Callback function
