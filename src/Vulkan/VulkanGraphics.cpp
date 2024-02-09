@@ -119,14 +119,26 @@ void CreateSwapchain(const VkPhysicalDevice& physicalDevice, const VkDevice& log
 	swapchainExtent = extent;
 }
 
-void DestroySwapchain(const VkDevice& device)
+void RecreateSwapchain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window)
 {
-	vkDestroySwapchainKHR(device, swapchain, nullptr);
+	vkDeviceWaitIdle(logicalDevice);
+
+	CleanupSwapchain(logicalDevice);
+
+	CreateSwapchain(physicalDevice, logicalDevice, window);
+	CreateImageViews(logicalDevice);
+	CreateFramebuffers(logicalDevice);
 }
 
-void RecreateSwapchain()
+void CleanupSwapchain(const VkDevice& device)
 {
-	
+	for (const auto& framebuffer : swapchainFramebuffers)
+		vkDestroyFramebuffer(device, framebuffer, nullptr);
+
+	for (const auto& imageView : swapchainImageViews)
+		vkDestroyImageView(device, imageView, nullptr);
+
+	vkDestroySwapchainKHR(device, swapchain, nullptr);
 }
 
 void CreateImageViews(const VkDevice& device)
@@ -156,12 +168,6 @@ void CreateImageViews(const VkDevice& device)
 		if (vkCreateImageView(device, &createInfo, nullptr, &swapchainImageViews[i]) != VK_SUCCESS)
 			throw std::runtime_error("Failed to create image views!");
 	}
-}
-
-void DestroyImageViews(const VkDevice& device)
-{
-	for (const auto& imageView : swapchainImageViews)
-		vkDestroyImageView(device, imageView, nullptr);
 }
 
 SwapChainSupportDetails QuerySwapChainSupport(const VkPhysicalDevice& device)
@@ -446,12 +452,6 @@ void CreateFramebuffers(const VkDevice& device)
 	}
 }
 
-void DestroyFramebuffers(const VkDevice& device)
-{
-	for (const auto& framebuffer : swapchainFramebuffers)
-		vkDestroyFramebuffer(device, framebuffer, nullptr);
-}
-
 void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice)
 {
 	const QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice);
@@ -566,19 +566,30 @@ void DestroySyncObjects(const VkDevice& device)
 {
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vkDestroySemaphore(device, imageAvailableSemaphores.at(i), nullptr);
 		vkDestroySemaphore(device, renderFinishedSemaphores.at(i), nullptr);
+		vkDestroySemaphore(device, imageAvailableSemaphores.at(i), nullptr);
 		vkDestroyFence(device, inFlightFences.at(i), nullptr);
 	}
 }
 
-void DrawFrame(const VkDevice& device, const VkQueue& graphicsQueue, const VkQueue& presentQueue)
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue)
 {
-	vkWaitForFences(device, 1, &inFlightFences.at(currentFrame), VK_TRUE, UINT64_MAX);
-	vkResetFences(device, 1, &inFlightFences.at(currentFrame));
+	vkWaitForFences(logicalDevice, 1, &inFlightFences.at(currentFrame), VK_TRUE, UINT64_MAX);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphores.at(currentFrame), VK_NULL_HANDLE, &imageIndex);
+	VkResult result = vkAcquireNextImageKHR(logicalDevice, swapchain, UINT64_MAX, imageAvailableSemaphores.at(currentFrame), VK_NULL_HANDLE, &imageIndex);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		RecreateSwapchain(physicalDevice, logicalDevice, window);
+
+		return;
+	}
+
+	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+		throw std::runtime_error("Failed to acquire swapchain image!");
+
+	vkResetFences(logicalDevice, 1, &inFlightFences.at(currentFrame));
 
 	vkResetCommandBuffer(commandBuffers.at(currentFrame), 0);
 	RecordCommandBuffer(commandBuffers.at(currentFrame), imageIndex);
@@ -616,7 +627,15 @@ void DrawFrame(const VkDevice& device, const VkQueue& graphicsQueue, const VkQue
 	presentInfo.pSwapchains = swapchains;
 	presentInfo.pImageIndices = &imageIndex;
 
-	vkQueuePresentKHR(presentQueue, &presentInfo);
+	result = vkQueuePresentKHR(presentQueue, &presentInfo);
+
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+	{
+		std::cout << "Hello World" << std::endl;
+		RecreateSwapchain(physicalDevice, logicalDevice, window);
+	}
+	else if (result != VK_SUCCESS)
+		throw std::runtime_error("Failed to present swap chain image!");
 
 	currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }

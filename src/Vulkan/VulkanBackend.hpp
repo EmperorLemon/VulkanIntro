@@ -50,14 +50,15 @@ const VkSurfaceKHR& GetWindowSurface();
 const char** GetRequiredWindowExtensions(uint32_t* count);
 
 void CreateSwapchain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window);
-void DestroySwapchain(const VkDevice& device);
-void RecreateSwapchain();
-void CreateImageViews(const VkDevice& device);
-void DestroyImageViews(const VkDevice& device);
+void CleanupSwapchain(const VkDevice& device);
+void RecreateSwapchain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window);
+
 SwapChainSupportDetails QuerySwapChainSupport(const VkPhysicalDevice& device);
 VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const Window& window);
+
+void CreateImageViews(const VkDevice& device);
 
 void CreateGraphicsPipeline(const VkDevice& device);
 void DestroyGraphicsPipeline(const VkDevice& device);
@@ -66,7 +67,6 @@ void CreateRenderPass(const VkDevice& device);
 void DestroyRenderPass(const VkDevice& device);
 
 void CreateFramebuffers(const VkDevice& device);
-void DestroyFramebuffers(const VkDevice& device);
 
 void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
 void DestroyCommandPool(const VkDevice& device);
@@ -80,7 +80,7 @@ VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, c
 void CreateSyncObjects(const VkDevice& device);
 void DestroySyncObjects(const VkDevice& device);
 
-void DrawFrame(const VkDevice& device, const VkQueue& graphicsQueue, const VkQueue& presentQueue);
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue);
 
 /**
  * \brief A Debug Callback function

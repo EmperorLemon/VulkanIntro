@@ -44,6 +44,7 @@ void VulkanApp::InitApp()
 
 void VulkanApp::UpdateApp()
 {
+	const auto& physicalDevice = GetPhysicalDevice();
 	const auto& logicalDevice = GetLogicalDevice();
 
 	const auto& graphicsQueue = GetGraphicsQueue();
@@ -52,7 +53,7 @@ void VulkanApp::UpdateApp()
 	while (!CanCloseWindow(m_window))
 	{
 		UpdateWindow(m_window);
-		DrawFrame(logicalDevice, graphicsQueue, presentQueue);
+		DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue);
 	}
 
 	vkDeviceWaitIdle(logicalDevice);
@@ -62,13 +63,11 @@ void VulkanApp::CleanupApp()
 {
 	const auto& logicalDevice = GetLogicalDevice();
 
-	DestroySyncObjects(logicalDevice);
-	DestroyCommandPool(logicalDevice);
-	DestroyFramebuffers(logicalDevice);
+	CleanupSwapchain(logicalDevice);
 	DestroyGraphicsPipeline(logicalDevice);
 	DestroyRenderPass(logicalDevice);
-	DestroyImageViews(logicalDevice);
-	DestroySwapchain(logicalDevice);
+	DestroySyncObjects(logicalDevice);
+	DestroyCommandPool(logicalDevice);
 	DestroyLogicalDevice();
 
 	const auto& instance = GetInstance();
@@ -78,6 +77,8 @@ void VulkanApp::CleanupApp()
 
 	DestroyWindowSurface(instance);
 	DestroyInstance();
+
 	DestroyWindow(m_window);
+
 	TerminateWindowLibrary();
 }
