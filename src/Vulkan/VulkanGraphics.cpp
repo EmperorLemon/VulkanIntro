@@ -28,6 +28,10 @@ VkPipeline graphicsPipeline;
 VkCommandPool commandPool;
 VkCommandBuffer commandBuffer;
 
+VkSemaphore imageAvailableSemaphore;
+VkSemaphore renderFinishedSemaphore;
+VkFence inFlightFence;
+
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
 	//VkWin32SurfaceCreateInfoKHR createInfo = {};
@@ -525,4 +529,9 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageI
 
 	if (vkEndCommandBuffer(cmdBuffer) != VK_SUCCESS)
 		throw std::runtime_error("Failed to record command buffer!");
+}
+
+void DrawFrame()
+{
+	
 }

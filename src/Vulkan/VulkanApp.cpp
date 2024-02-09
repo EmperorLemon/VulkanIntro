@@ -38,6 +38,8 @@ void VulkanApp::InitApp()
 	CreateGraphicsPipeline(logicalDevice);
 	CreateFramebuffers(logicalDevice);
 	CreateCommandPool(physicalDevice, logicalDevice);
+	CreateCommandBuffer(logicalDevice);
+	CreateSyncObjects();
 }
 
 void VulkanApp::UpdateApp()
@@ -45,6 +47,7 @@ void VulkanApp::UpdateApp()
 	while (!CanCloseWindow(m_window))
 	{
 		UpdateWindow(m_window);
+		DrawFrame();
 	}
 }
 
