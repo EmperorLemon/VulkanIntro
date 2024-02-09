@@ -32,13 +32,13 @@ void VulkanApp::InitApp()
 	const auto& physicalDevice = GetPhysicalDevice();
 	const auto& logicalDevice = GetLogicalDevice();
 
-	CreateSwapChain(physicalDevice, logicalDevice, m_window);
+	CreateSwapchain(physicalDevice, logicalDevice, m_window);
 	CreateImageViews(logicalDevice);
 	CreateRenderPass(logicalDevice);
 	CreateGraphicsPipeline(logicalDevice);
 	CreateFramebuffers(logicalDevice);
 	CreateCommandPool(physicalDevice, logicalDevice);
-	CreateCommandBuffer(logicalDevice);
+	CreateCommandBuffers(logicalDevice);
 	CreateSyncObjects(logicalDevice);
 }
 
@@ -68,7 +68,7 @@ void VulkanApp::CleanupApp()
 	DestroyGraphicsPipeline(logicalDevice);
 	DestroyRenderPass(logicalDevice);
 	DestroyImageViews(logicalDevice);
-	DestroySwapChain(logicalDevice);
+	DestroySwapchain(logicalDevice);
 	DestroyLogicalDevice();
 
 	const auto& instance = GetInstance();

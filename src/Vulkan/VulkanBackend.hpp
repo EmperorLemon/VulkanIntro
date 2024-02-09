@@ -49,8 +49,9 @@ void DestroyWindowSurface(const VkInstance& instance);
 const VkSurfaceKHR& GetWindowSurface();
 const char** GetRequiredWindowExtensions(uint32_t* count);
 
-void CreateSwapChain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window);
-void DestroySwapChain(const VkDevice& device);
+void CreateSwapchain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window);
+void DestroySwapchain(const VkDevice& device);
+void RecreateSwapchain();
 void CreateImageViews(const VkDevice& device);
 void DestroyImageViews(const VkDevice& device);
 SwapChainSupportDetails QuerySwapChainSupport(const VkPhysicalDevice& device);
@@ -70,7 +71,7 @@ void DestroyFramebuffers(const VkDevice& device);
 void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
 void DestroyCommandPool(const VkDevice& device);
 
-void CreateCommandBuffer(const VkDevice& device);
+void CreateCommandBuffers(const VkDevice& device);
 void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, uint32_t imageIndex);
 
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
