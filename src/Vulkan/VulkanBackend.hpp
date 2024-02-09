@@ -80,7 +80,7 @@ VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, c
 void CreateSyncObjects(const VkDevice& device);
 void DestroySyncObjects(const VkDevice& device);
 
-void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue);
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue);
 
 /**
  * \brief A Debug Callback function

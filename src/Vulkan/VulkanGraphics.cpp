@@ -582,7 +582,7 @@ void DestroySyncObjects(const VkDevice& device)
 	}
 }
 
-void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue)
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue)
 {
 	vkWaitForFences(logicalDevice, 1, &inFlightFences.at(currentFrame), VK_TRUE, UINT64_MAX);
 
