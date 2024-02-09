@@ -58,8 +58,14 @@ VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const 
 
 void CreateGraphicsPipeline(const VkDevice& device);
 void DestroyGraphicsPipeline(const VkDevice& device);
+
+void CreateRenderPass(const VkDevice& device);
+void DestroyRenderPass(const VkDevice& device);
+
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
 VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, const VkShaderModule& module);
+
+
 
 /**
  * \brief A Debug Callback function

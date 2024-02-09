@@ -34,6 +34,7 @@ void VulkanApp::InitApp()
 
 	CreateSwapChain(physicalDevice, logicalDevice, m_window);
 	CreateImageViews(logicalDevice);
+	CreateRenderPass(logicalDevice);
 	CreateGraphicsPipeline(logicalDevice);
 }
 
@@ -50,6 +51,7 @@ void VulkanApp::CleanupApp()
 	const auto& logicalDevice = GetLogicalDevice();
 
 	DestroyGraphicsPipeline(logicalDevice);
+	DestroyRenderPass(logicalDevice);
 	DestroyImageViews(logicalDevice);
 	DestroySwapChain(logicalDevice);
 	DestroyLogicalDevice();
