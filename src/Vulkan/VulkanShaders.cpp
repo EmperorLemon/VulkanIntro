@@ -3,7 +3,6 @@
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode)
 {
 	VkShaderModuleCreateInfo createInfo = {};
-
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 
 	createInfo.codeSize = bytecode.size();
@@ -20,10 +19,9 @@ VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& byt
 VkPipelineShaderStageCreateInfo CreateShaderStage(const VkShaderStageFlagBits stage, const VkShaderModule& module)
 {
 	VkPipelineShaderStageCreateInfo shaderStageInfo = {};
-
 	shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	shaderStageInfo.stage = stage;
 
+	shaderStageInfo.stage = stage;
 	shaderStageInfo.module = module;
 	shaderStageInfo.pName = "main";
 

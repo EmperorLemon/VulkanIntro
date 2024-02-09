@@ -44,7 +44,6 @@ void CreateLogicalDevice(const bool enableValidationLayers)
 	for (uint32_t queueFamily : uniqueQueueFamilies) 
 	{
 		VkDeviceQueueCreateInfo queueCreateInfo = {};
-
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 
 		queueCreateInfo.queueFamilyIndex = queueFamily;
@@ -57,7 +56,6 @@ void CreateLogicalDevice(const bool enableValidationLayers)
 	const VkPhysicalDeviceFeatures deviceFeatures = {};
 
 	VkDeviceCreateInfo createInfo = {};
-
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
 	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
@@ -147,4 +145,14 @@ QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device)
 	}
 
 	return indices;
+}
+
+const VkQueue& GetGraphicsQueue()
+{
+	return graphicsQueue;
+}
+
+const VkQueue& GetPresentationQueue()
+{
+	return presentQueue;
 }

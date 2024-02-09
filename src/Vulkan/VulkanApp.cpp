@@ -44,11 +44,18 @@ void VulkanApp::InitApp()
 
 void VulkanApp::UpdateApp()
 {
+	const auto& logicalDevice = GetLogicalDevice();
+
+	const auto& graphicsQueue = GetGraphicsQueue();
+	const auto& presentQueue = GetPresentationQueue();
+
 	while (!CanCloseWindow(m_window))
 	{
 		UpdateWindow(m_window);
-		DrawFrame();
+		DrawFrame(logicalDevice, graphicsQueue, presentQueue);
 	}
+
+	vkDeviceWaitIdle(logicalDevice);
 }
 
 void VulkanApp::CleanupApp()

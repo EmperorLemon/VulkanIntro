@@ -41,6 +41,8 @@ const VkDevice& GetLogicalDevice();
 
 bool IsDeviceSuitable(const VkPhysicalDevice& device);
 QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
+const VkQueue& GetGraphicsQueue();
+const VkQueue& GetPresentationQueue();
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window);
 void DestroyWindowSurface(const VkInstance& instance);
@@ -77,7 +79,7 @@ VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, c
 void CreateSyncObjects(const VkDevice& device);
 void DestroySyncObjects(const VkDevice& device);
 
-void DrawFrame();
+void DrawFrame(const VkDevice& device, const VkQueue& graphicsQueue, const VkQueue& presentQueue);
 
 /**
  * \brief A Debug Callback function

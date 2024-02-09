@@ -21,16 +21,16 @@ std::vector<VkImage> swapChainImages;
 std::vector<VkImageView> swapChainImageViews;
 std::vector<VkFramebuffer> swapChainFramebuffers;
 
-VkRenderPass renderPass;
-VkPipelineLayout pipelineLayout;
-VkPipeline graphicsPipeline;
+VkRenderPass renderPass = VK_NULL_HANDLE;
+VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
-VkCommandPool commandPool;
-VkCommandBuffer commandBuffer;
+VkCommandPool commandPool = VK_NULL_HANDLE;
+VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
 
-VkSemaphore imageAvailableSemaphore;
-VkSemaphore renderFinishedSemaphore;
-VkFence inFlightFence;
+VkSemaphore imageAvailableSemaphore = VK_NULL_HANDLE;
+VkSemaphore renderFinishedSemaphore = VK_NULL_HANDLE;
+VkFence inFlightFence = VK_NULL_HANDLE;
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
@@ -77,10 +77,9 @@ void CreateSwapChain(const VkPhysicalDevice& physicalDevice, const VkDevice& log
 		imageCount = swapChainSupport.capabilities.maxImageCount;
 
 	VkSwapchainCreateInfoKHR createInfo = {};
-
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	createInfo.surface = surface;
 
+	createInfo.surface = surface;
 	createInfo.minImageCount = imageCount;
 	createInfo.imageFormat = surfaceFormat.format;
 	createInfo.imageColorSpace = surfaceFormat.colorSpace;
@@ -129,10 +128,9 @@ void CreateImageViews(const VkDevice& device)
 	for (size_t i = 0; i < swapChainImages.size(); ++i)
 	{
 		VkImageViewCreateInfo createInfo = {};
-
 		createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		createInfo.image = swapChainImages.at(i);
 
+		createInfo.image = swapChainImages.at(i);
 		createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
 		createInfo.format = swapChainImageFormat;
 
@@ -237,21 +235,18 @@ void CreateGraphicsPipeline(const VkDevice& device)
 
 	const std::vector dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 	VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-
 	dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 
 	dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 	dynamicStateInfo.pDynamicStates = dynamicStates.data();
 
 	VkPipelineVertexInputStateCreateInfo vertexInput = {};
-
 	vertexInput.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
 	vertexInput.vertexBindingDescriptionCount = 0;
 	vertexInput.vertexAttributeDescriptionCount = 0;
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
-
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 
 	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -274,15 +269,13 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	scissor.extent = swapChainExtent;
 
 	VkPipelineViewportStateCreateInfo viewportState = {};
-
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 
-	// NOTE: May setup viewport and scissor rectangles later
+	// NOTE: Setup viewport and scissor rectangles in DrawFrame
 	viewportState.viewportCount = 1;
 	viewportState.scissorCount = 1;
 
 	VkPipelineRasterizationStateCreateInfo rasterizer = {};
-
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 
 	rasterizer.depthClampEnable = VK_FALSE;
@@ -294,7 +287,6 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	rasterizer.depthBiasEnable = VK_FALSE;
 
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
-
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 
 	multisampling.sampleShadingEnable = VK_FALSE;
@@ -308,7 +300,6 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	colorBlendAttachment.blendEnable = VK_FALSE;
 
 	VkPipelineColorBlendStateCreateInfo colorBlending = {};
-
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 
 	colorBlending.logicOpEnable = VK_FALSE;
@@ -316,14 +307,12 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	colorBlending.pAttachments = &colorBlendAttachment;
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
 	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create pipeline layout!");
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
-
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 
 	pipelineInfo.stageCount = 2;
@@ -387,8 +376,18 @@ void CreateRenderPass(const VkDevice& device)
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentRef;
 
-	VkRenderPassCreateInfo renderPassInfo = {};
+	VkSubpassDependency dependency = {};
 
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+	VkRenderPassCreateInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 
 	renderPassInfo.attachmentCount = 1;
@@ -396,6 +395,9 @@ void CreateRenderPass(const VkDevice& device)
 
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;
+
+	renderPassInfo.dependencyCount = 1;
+	renderPassInfo.pDependencies = &dependency;
 
 	if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create render pass!");
@@ -417,7 +419,6 @@ void CreateFramebuffers(const VkDevice& device)
 		const VkImageView attachments[] = { swapChainImageView };
 
 		VkFramebufferCreateInfo framebufferInfo = {};
-
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 
 		framebufferInfo.renderPass = renderPass;
@@ -448,7 +449,6 @@ void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& l
 	const QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice);
 
 	VkCommandPoolCreateInfo poolInfo = {};
-
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
@@ -466,7 +466,6 @@ void DestroyCommandPool(const VkDevice& device)
 void CreateCommandBuffer(const VkDevice& device)
 {
 	VkCommandBufferAllocateInfo allocInfo = {};
-
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 
 	allocInfo.commandPool = commandPool;
@@ -480,14 +479,12 @@ void CreateCommandBuffer(const VkDevice& device)
 void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo = {};
-
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
 	if (vkBeginCommandBuffer(cmdBuffer, &beginInfo) != VK_SUCCESS)
 		throw std::runtime_error("Failed to begin recording command buffer!");
 
 	VkRenderPassBeginInfo renderPassInfo = {};
-
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 
 	renderPassInfo.renderPass = renderPass;
@@ -538,6 +535,7 @@ void CreateSyncObjects(const VkDevice& device)
 
 	VkFenceCreateInfo fenceInfo = {};
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
 	if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS ||
 		vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
@@ -554,7 +552,49 @@ void DestroySyncObjects(const VkDevice& device)
 	vkDestroyFence(device, inFlightFence, nullptr);
 }
 
-void DrawFrame()
+void DrawFrame(const VkDevice& device, const VkQueue& graphicsQueue, const VkQueue& presentQueue)
 {
-	
+	vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+	vkResetFences(device, 1, &inFlightFence);
+
+	uint32_t imageIndex;
+	vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+	vkResetCommandBuffer(commandBuffer, 0);
+	RecordCommandBuffer(commandBuffer, imageIndex);
+
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+	const VkSemaphore waitSemaphores[] = { imageAvailableSemaphore };
+	constexpr VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+	submitInfo.waitSemaphoreCount = 1;
+	submitInfo.pWaitSemaphores = waitSemaphores;
+	submitInfo.pWaitDstStageMask = waitStages;
+
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffer;
+
+	const VkSemaphore signalSemaphores[] = { renderFinishedSemaphore };
+
+	submitInfo.signalSemaphoreCount = 1;
+	submitInfo.pSignalSemaphores = signalSemaphores;
+
+	if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFence) != VK_SUCCESS)
+		throw std::runtime_error("Failed to submit draw command buffer!");
+
+	VkPresentInfoKHR presentInfo = {};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = signalSemaphores;
+
+	const VkSwapchainKHR swapchains[] = {swapChain};
+
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = swapchains;
+	presentInfo.pImageIndices = &imageIndex;
+
+	vkQueuePresentKHR(presentQueue, &presentInfo);
 }

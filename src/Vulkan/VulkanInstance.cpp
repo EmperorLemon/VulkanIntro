@@ -12,7 +12,6 @@ void CreateInstance(const bool enableValidationLayers)
 		throw std::runtime_error("Validation layers requested, but not available!");
 
 	VkApplicationInfo appInfo = {};
-
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 
 	appInfo.pApplicationName = "Application Test";
@@ -24,8 +23,8 @@ void CreateInstance(const bool enableValidationLayers)
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	VkInstanceCreateInfo createInfo{};
-
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+
 	createInfo.pApplicationInfo = &appInfo;
 
 	const auto extensions = GetRequiredExtensions(enableValidationLayers);
