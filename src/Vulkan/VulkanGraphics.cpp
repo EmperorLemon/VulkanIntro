@@ -531,9 +531,27 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageI
 		throw std::runtime_error("Failed to record command buffer!");
 }
 
-void CreateSyncObjects()
+void CreateSyncObjects(const VkDevice& device)
 {
-	
+	VkSemaphoreCreateInfo semaphoreInfo = {};
+	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+	VkFenceCreateInfo fenceInfo = {};
+	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+	if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphore) != VK_SUCCESS ||
+		vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphore) != VK_SUCCESS ||
+		vkCreateFence(device, &fenceInfo, nullptr, &inFlightFence) != VK_SUCCESS) 
+	{
+		throw std::runtime_error("Failed to create semaphores!");
+	}
+}
+
+void DestroySyncObjects(const VkDevice& device)
+{
+	vkDestroySemaphore(device, imageAvailableSemaphore, nullptr);
+	vkDestroySemaphore(device, renderFinishedSemaphore, nullptr);
+	vkDestroyFence(device, inFlightFence, nullptr);
 }
 
 void DrawFrame()

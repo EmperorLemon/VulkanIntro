@@ -39,7 +39,7 @@ void VulkanApp::InitApp()
 	CreateFramebuffers(logicalDevice);
 	CreateCommandPool(physicalDevice, logicalDevice);
 	CreateCommandBuffer(logicalDevice);
-	CreateSyncObjects();
+	CreateSyncObjects(logicalDevice);
 }
 
 void VulkanApp::UpdateApp()
@@ -55,6 +55,7 @@ void VulkanApp::CleanupApp()
 {
 	const auto& logicalDevice = GetLogicalDevice();
 
+	DestroySyncObjects(logicalDevice);
 	DestroyCommandPool(logicalDevice);
 	DestroyFramebuffers(logicalDevice);
 	DestroyGraphicsPipeline(logicalDevice);

@@ -74,7 +74,8 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, uint32_t imageIndex);
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
 VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, const VkShaderModule& module);
 
-void CreateSyncObjects();
+void CreateSyncObjects(const VkDevice& device);
+void DestroySyncObjects(const VkDevice& device);
 
 void DrawFrame();
 
