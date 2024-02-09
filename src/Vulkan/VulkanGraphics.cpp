@@ -121,6 +121,16 @@ void CreateSwapchain(const VkPhysicalDevice& physicalDevice, const VkDevice& log
 
 void RecreateSwapchain(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window)
 {
+	int width = 0, height = 0;
+
+	glfwGetFramebufferSize(static_cast<GLFWwindow*>(window.window), &width, &height);
+
+	while (width == 0 || height == 0)
+	{
+		glfwGetFramebufferSize(static_cast<GLFWwindow*>(window.window), &width, &height);
+		glfwWaitEvents();
+	}
+
 	vkDeviceWaitIdle(logicalDevice);
 
 	CleanupSwapchain(logicalDevice);
