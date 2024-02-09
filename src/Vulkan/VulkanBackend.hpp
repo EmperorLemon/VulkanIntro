@@ -62,6 +62,9 @@ void DestroyGraphicsPipeline(const VkDevice& device);
 void CreateRenderPass(const VkDevice& device);
 void DestroyRenderPass(const VkDevice& device);
 
+void CreateFramebuffers(const VkDevice& device);
+void DestroyFramebuffers(const VkDevice& device);
+
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
 VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, const VkShaderModule& module);
 

@@ -19,9 +19,11 @@ VkExtent2D swapChainExtent;
 
 std::vector<VkImage> swapChainImages;
 std::vector<VkImageView> swapChainImageViews;
+std::vector<VkFramebuffer> swapChainFramebuffers;
 
 VkRenderPass renderPass;
 VkPipelineLayout pipelineLayout;
+VkPipeline graphicsPipeline;
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
@@ -198,22 +200,20 @@ VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const 
 {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 		return capabilities.currentExtent;
-	else
+
+	int width, height;
+	glfwGetFramebufferSize(static_cast<GLFWwindow*>(window.window), &width, &height);
+
+	VkExtent2D actualExtent =
 	{
-		int width, height;
-		glfwGetFramebufferSize(static_cast<GLFWwindow*>(window.window), &width, &height);
+		static_cast<uint32_t>(width),
+		static_cast<uint32_t>(height)
+	};
 
-		VkExtent2D actualExtent =
-		{
-			static_cast<uint32_t>(width),
-			static_cast<uint32_t>(height)
-		};
+	actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+	actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
-		actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-		actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-		return actualExtent;
-	}
+	return actualExtent;
 }
 
 void CreateGraphicsPipeline(const VkDevice& device)
@@ -227,9 +227,6 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	const VkShaderModule& fs_module = CreateShaderModule(device, fs_src);
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { CreateShaderStage(VK_SHADER_STAGE_VERTEX_BIT, vs_module), CreateShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT, fs_module) };
-
-	vkDestroyShaderModule(device, fs_module, nullptr);
-	vkDestroyShaderModule(device, vs_module, nullptr);
 
 	const std::vector dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 	VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
@@ -317,10 +314,41 @@ void CreateGraphicsPipeline(const VkDevice& device)
 
 	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create pipeline layout!");
+
+	VkGraphicsPipelineCreateInfo pipelineInfo = {};
+
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+
+	pipelineInfo.stageCount = 2;
+	pipelineInfo.pStages = shaderStages;
+
+	pipelineInfo.pVertexInputState = &vertexInput;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewportState;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = nullptr; // Optional
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.pDynamicState = &dynamicStateInfo;
+
+	pipelineInfo.layout = pipelineLayout;
+
+	pipelineInfo.renderPass = renderPass;
+	pipelineInfo.subpass = 0;
+
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
+	pipelineInfo.basePipelineIndex = -1; // Optional
+
+	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
+		throw std::runtime_error("Failed to create graphics pipeline!");
+
+	vkDestroyShaderModule(device, fs_module, nullptr);
+	vkDestroyShaderModule(device, vs_module, nullptr);
 }
 
 void DestroyGraphicsPipeline(const VkDevice& device)
 {
+	vkDestroyPipeline(device, graphicsPipeline, nullptr);
 	vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 }
 
@@ -369,4 +397,41 @@ void CreateRenderPass(const VkDevice& device)
 void DestroyRenderPass(const VkDevice& device)
 {
 	vkDestroyRenderPass(device, renderPass, nullptr);
+}
+
+void CreateFramebuffers(const VkDevice& device)
+{
+	swapChainFramebuffers.resize(swapChainImageViews.size());
+
+	int i = 0;
+
+	for (const auto& swapChainImageView : swapChainImageViews)
+	{
+		const VkImageView attachments[] = {swapChainImageView};
+
+		VkFramebufferCreateInfo framebufferInfo = {};
+
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+
+		framebufferInfo.renderPass = renderPass;
+
+		framebufferInfo.attachmentCount = 1;
+		framebufferInfo.pAttachments = attachments;
+
+		framebufferInfo.width = swapChainExtent.width;
+		framebufferInfo.height = swapChainExtent.height;
+
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
+			throw std::runtime_error("Failed to create framebuffer!");
+
+		i++;
+	}
+}
+
+void DestroyFramebuffers(const VkDevice& device)
+{
+	for (const auto& framebuffer : swapChainFramebuffers)
+		vkDestroyFramebuffer(device, framebuffer, nullptr);
 }
