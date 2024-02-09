@@ -25,6 +25,8 @@ VkRenderPass renderPass;
 VkPipelineLayout pipelineLayout;
 VkPipeline graphicsPipeline;
 
+VkCommandPool commandPool;
+
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
 	//VkWin32SurfaceCreateInfoKHR createInfo = {};
@@ -434,4 +436,24 @@ void DestroyFramebuffers(const VkDevice& device)
 {
 	for (const auto& framebuffer : swapChainFramebuffers)
 		vkDestroyFramebuffer(device, framebuffer, nullptr);
+}
+
+void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice)
+{
+	const QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice);
+
+	VkCommandPoolCreateInfo poolInfo = {};
+
+	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+
+	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+
+	if (vkCreateCommandPool(logicalDevice, &poolInfo, nullptr, &commandPool) != VK_SUCCESS)
+		throw std::runtime_error("Failed to create command pool!");
+}
+
+void DestroyCommandPool(const VkDevice& device)
+{
+	vkDestroyCommandPool(device, commandPool, nullptr);
 }
