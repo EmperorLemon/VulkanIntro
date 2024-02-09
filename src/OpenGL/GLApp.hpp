@@ -2,7 +2,7 @@
 
 #include "Window/Window.hpp"
 
-class VulkanApp
+class GLApp
 {
 public:
 	void Run();
