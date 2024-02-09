@@ -49,6 +49,7 @@ void VulkanApp::CleanupApp()
 {
 	const auto& logicalDevice = GetLogicalDevice();
 
+	DestroyGraphicsPipeline(logicalDevice);
 	DestroyImageViews(logicalDevice);
 	DestroySwapChain(logicalDevice);
 	DestroyLogicalDevice();

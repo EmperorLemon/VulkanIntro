@@ -12,7 +12,6 @@ src/Vulkan/VulkanInstance.cpp
 src/Vulkan/VulkanExtension.cpp
 src/Vulkan/VulkanGraphics.cpp
 src/Vulkan/VulkanShaders.cpp
-src/Vulkan/VulkanWindow.cpp
 src/Vulkan/VulkanDevice.cpp
 src/Vulkan/VulkanDebug.cpp
 
