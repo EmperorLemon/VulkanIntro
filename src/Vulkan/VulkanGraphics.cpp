@@ -531,6 +531,11 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageI
 		throw std::runtime_error("Failed to record command buffer!");
 }
 
+void CreateSyncObjects()
+{
+	
+}
+
 void DrawFrame()
 {
 	
