@@ -1,7 +1,5 @@
 #include "VulkanApp.hpp"
-
 #include "VulkanBackend.hpp"
-#include "Window/GLFWwindow.hpp"
 
 #ifdef NDEBUG
 constexpr bool enableValidationLayers = false;
@@ -11,8 +9,7 @@ constexpr bool enableValidationLayers = true;
 
 void VulkanApp::Run()
 {
-	InitWindowLibrary();
-	m_window = CreateWindow(800, 600);
+	m_window = { 800, 600 };
 	InitApp();
 	UpdateApp();
 	CleanupApp();
@@ -52,7 +49,7 @@ void VulkanApp::UpdateApp()
 
 	while (!CanCloseWindow(m_window))
 	{
-		UpdateWindow(m_window);
+		UpdateWindow();
 		DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue);
 	}
 
@@ -79,6 +76,4 @@ void VulkanApp::CleanupApp()
 	DestroyInstance();
 
 	DestroyWindow(m_window);
-
-	TerminateWindowLibrary();
 }

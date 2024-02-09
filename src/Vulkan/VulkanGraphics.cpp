@@ -641,7 +641,6 @@ void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDe
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 	{
-		std::cout << "Hello World" << std::endl;
 		RecreateSwapchain(physicalDevice, logicalDevice, window);
 	}
 	else if (result != VK_SUCCESS)

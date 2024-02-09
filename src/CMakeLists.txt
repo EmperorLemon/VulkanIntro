@@ -3,8 +3,7 @@ set(SOURCES
 src/main.cpp
 
 src/Window/Window.hpp
-src/Window/GLFWwindow.hpp
-src/Window/GLFWwindow.cpp
+src/Window/Window.cpp
 
 src/Vulkan/VulkanBackend.hpp
 
