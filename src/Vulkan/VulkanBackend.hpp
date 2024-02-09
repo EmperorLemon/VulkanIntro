@@ -68,6 +68,9 @@ void DestroyFramebuffers(const VkDevice& device);
 void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
 void DestroyCommandPool(const VkDevice& device);
 
+void CreateCommandBuffer(const VkDevice& device);
+void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, uint32_t imageIndex);
+
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
 VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, const VkShaderModule& module);
 

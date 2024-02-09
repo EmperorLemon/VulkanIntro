@@ -26,6 +26,7 @@ VkPipelineLayout pipelineLayout;
 VkPipeline graphicsPipeline;
 
 VkCommandPool commandPool;
+VkCommandBuffer commandBuffer;
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
@@ -409,7 +410,7 @@ void CreateFramebuffers(const VkDevice& device)
 
 	for (const auto& swapChainImageView : swapChainImageViews)
 	{
-		const VkImageView attachments[] = {swapChainImageView};
+		const VkImageView attachments[] = { swapChainImageView };
 
 		VkFramebufferCreateInfo framebufferInfo = {};
 
@@ -456,4 +457,72 @@ void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& l
 void DestroyCommandPool(const VkDevice& device)
 {
 	vkDestroyCommandPool(device, commandPool, nullptr);
+}
+
+void CreateCommandBuffer(const VkDevice& device)
+{
+	VkCommandBufferAllocateInfo allocInfo = {};
+
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+
+	allocInfo.commandPool = commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = 1;
+
+	if (vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer) != VK_SUCCESS)
+		throw std::runtime_error("Failed to allocate command buffers!");
+}
+
+void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageIndex)
+{
+	VkCommandBufferBeginInfo beginInfo = {};
+
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+	if (vkBeginCommandBuffer(cmdBuffer, &beginInfo) != VK_SUCCESS)
+		throw std::runtime_error("Failed to begin recording command buffer!");
+
+	VkRenderPassBeginInfo renderPassInfo = {};
+
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+
+	renderPassInfo.renderPass = renderPass;
+	renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+
+	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.extent = swapChainExtent;
+
+	constexpr VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+	renderPassInfo.clearValueCount = 1;
+	renderPassInfo.pClearValues = &clearColor;
+
+	vkCmdBeginRenderPass(cmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+
+	VkViewport viewport = {};
+
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+
+	viewport.width = static_cast<float>(swapChainExtent.width);
+	viewport.height = static_cast<float>(swapChainExtent.height);
+
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+
+	vkCmdSetViewport(cmdBuffer, 0, 1, &viewport);
+
+	VkRect2D scissor = {};
+
+	scissor.offset = { 0, 0 };
+	scissor.extent = swapChainExtent;
+
+	vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
+
+	vkCmdDraw(cmdBuffer, 3, 1, 0, 0);
+
+	vkCmdEndRenderPass(cmdBuffer);
+
+	if (vkEndCommandBuffer(cmdBuffer) != VK_SUCCESS)
+		throw std::runtime_error("Failed to record command buffer!");
 }
