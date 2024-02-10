@@ -14,6 +14,8 @@ struct Window
 	std::string title;
 
 	void* window = nullptr;
+
+	static bool resized;
 };
 
 void UpdateWindow();

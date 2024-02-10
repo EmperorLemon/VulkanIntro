@@ -257,13 +257,6 @@ void CreateGraphicsPipeline(const VkDevice& device)
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { CreateShaderStage(VK_SHADER_STAGE_VERTEX_BIT, vs_module), CreateShaderStage(VK_SHADER_STAGE_FRAGMENT_BIT, fs_module) };
 
-	const std::vector dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-	VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-	dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-
-	dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-	dynamicStateInfo.pDynamicStates = dynamicStates.data();
-
 	VkPipelineVertexInputStateCreateInfo vertexInput = {};
 	vertexInput.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
@@ -275,22 +268,6 @@ void CreateGraphicsPipeline(const VkDevice& device)
 
 	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	inputAssembly.primitiveRestartEnable = VK_FALSE;
-
-	VkViewport viewport = {};
-
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-
-	viewport.width = static_cast<float>(swapchainExtent.width);
-	viewport.height = static_cast<float>(swapchainExtent.height);
-
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D scissor = {};
-
-	scissor.offset = { 0, 0 };
-	scissor.extent = swapchainExtent;
 
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -330,6 +307,14 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	colorBlending.attachmentCount = 1;
 	colorBlending.pAttachments = &colorBlendAttachment;
 
+	const std::vector dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+
+	VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+	dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+
+	dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+	dynamicStateInfo.pDynamicStates = dynamicStates.data();
+
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
@@ -347,7 +332,6 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	pipelineInfo.pViewportState = &viewportState;
 	pipelineInfo.pRasterizationState = &rasterizer;
 	pipelineInfo.pMultisampleState = &multisampling;
-	pipelineInfo.pDepthStencilState = nullptr; // Optional
 	pipelineInfo.pColorBlendState = &colorBlending;
 	pipelineInfo.pDynamicState = &dynamicStateInfo;
 
@@ -357,7 +341,6 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	pipelineInfo.subpass = 0;
 
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
-	pipelineInfo.basePipelineIndex = -1; // Optional
 
 	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create graphics pipeline!");
@@ -509,7 +492,6 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageI
 
 	renderPassInfo.renderPass = renderPass;
 	renderPassInfo.framebuffer = swapchainFramebuffers[imageIndex];
-
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = swapchainExtent;
 
@@ -518,30 +500,29 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageI
 	renderPassInfo.pClearValues = &clearColor;
 
 	vkCmdBeginRenderPass(cmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-	vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+		vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-	VkViewport viewport = {};
+		VkViewport viewport = {};
 
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
 
-	viewport.width = static_cast<float>(swapchainExtent.width);
-	viewport.height = static_cast<float>(swapchainExtent.height);
+		viewport.width = static_cast<float>(swapchainExtent.width);
+		viewport.height = static_cast<float>(swapchainExtent.height);
 
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
 
-	vkCmdSetViewport(cmdBuffer, 0, 1, &viewport);
+		vkCmdSetViewport(cmdBuffer, 0, 1, &viewport);
 
-	VkRect2D scissor = {};
+		VkRect2D scissor = {};
 
-	scissor.offset = { 0, 0 };
-	scissor.extent = swapchainExtent;
+		scissor.offset = { 0, 0 };
+		scissor.extent = swapchainExtent;
 
-	vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
+		vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
 
-	vkCmdDraw(cmdBuffer, 3, 1, 0, 0);
-
+		vkCmdDraw(cmdBuffer, 3, 1, 0, 0);
 	vkCmdEndRenderPass(cmdBuffer);
 
 	if (vkEndCommandBuffer(cmdBuffer) != VK_SUCCESS)
@@ -639,8 +620,9 @@ void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDe
 
 	result = vkQueuePresentKHR(presentQueue, &presentInfo);
 
-	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
+	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || Window::resized)
 	{
+		Window::resized = false;
 		RecreateSwapchain(physicalDevice, logicalDevice, window);
 	}
 	else if (result != VK_SUCCESS)
