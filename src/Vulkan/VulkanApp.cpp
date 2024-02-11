@@ -9,6 +9,13 @@ constexpr bool enableValidationLayers = false;
 constexpr bool enableValidationLayers = true;
 #endif
 
+const std::vector<Vertex> vertices =
+{
+	{{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}
+};
+
 void VulkanApp::Run()
 {
 	m_window = { 800, 600 };
@@ -37,6 +44,7 @@ void VulkanApp::InitApp()
 	CreateGraphicsPipeline(logicalDevice);
 	CreateFramebuffers(logicalDevice);
 	CreateCommandPool(physicalDevice, logicalDevice);
+	CreateVertexBuffer(physicalDevice, logicalDevice, vertices);
 	CreateCommandBuffers(logicalDevice);
 	CreateSyncObjects(logicalDevice);
 }
@@ -48,11 +56,12 @@ void VulkanApp::UpdateApp()
 
 	const auto& graphicsQueue = GetGraphicsQueue();
 	const auto& presentQueue = GetPresentationQueue();
+	const auto& vertexBuffer = GetVertexBuffer();
 
 	while (!CanCloseWindow(m_window))
 	{
 		UpdateWindow();
-		DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue);
+		DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue, vertexBuffer);
 	}
 
 	vkDeviceWaitIdle(logicalDevice);
@@ -63,6 +72,7 @@ void VulkanApp::CleanupApp()
 	const auto& logicalDevice = GetLogicalDevice();
 
 	CleanupSwapchain(logicalDevice);
+	DestroyVertexBuffer(logicalDevice);
 	DestroyGraphicsPipeline(logicalDevice);
 	DestroyRenderPass(logicalDevice);
 	DestroySyncObjects(logicalDevice);

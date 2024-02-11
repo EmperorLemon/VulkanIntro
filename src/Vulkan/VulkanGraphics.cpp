@@ -35,6 +35,13 @@ std::vector<VkSemaphore> imageAvailableSemaphores;
 std::vector<VkSemaphore> renderFinishedSemaphores;
 std::vector<VkFence> inFlightFences;
 
+const std::vector<Vertex> vertices =
+{
+	{{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}
+};
+
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
 	//VkWin32SurfaceCreateInfoKHR createInfo = {};
@@ -484,7 +491,7 @@ void CreateCommandBuffers(const VkDevice& device)
 		throw std::runtime_error("Failed to allocate command buffers!");
 }
 
-void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageIndex)
+void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const VkBuffer& vertexBuffer, const uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -507,27 +514,25 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const uint32_t imageI
 	vkCmdBeginRenderPass(cmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-		VkViewport viewport = {};
-
+		VkViewport viewport;
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
-
 		viewport.width = static_cast<float>(swapchainExtent.width);
 		viewport.height = static_cast<float>(swapchainExtent.height);
-
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
-
 		vkCmdSetViewport(cmdBuffer, 0, 1, &viewport);
 
-		VkRect2D scissor = {};
-
+		VkRect2D scissor;
 		scissor.offset = { 0, 0 };
 		scissor.extent = swapchainExtent;
-
 		vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
 
-		vkCmdDraw(cmdBuffer, 3, 1, 0, 0);
+		const VkBuffer vertexBuffers[] = { vertexBuffer };
+		constexpr VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(cmdBuffer, 0, 1, vertexBuffers, offsets);
+
+		vkCmdDraw(cmdBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 	vkCmdEndRenderPass(cmdBuffer);
 
 	if (vkEndCommandBuffer(cmdBuffer) != VK_SUCCESS)
@@ -568,7 +573,7 @@ void DestroySyncObjects(const VkDevice& device)
 	}
 }
 
-void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue)
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const VkBuffer& vertexBuffer)
 {
 	vkWaitForFences(logicalDevice, 1, &inFlightFences.at(currentFrame), VK_TRUE, UINT64_MAX);
 
@@ -588,7 +593,7 @@ void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDe
 	vkResetFences(logicalDevice, 1, &inFlightFences.at(currentFrame));
 
 	vkResetCommandBuffer(commandBuffers.at(currentFrame), 0);
-	RecordCommandBuffer(commandBuffers.at(currentFrame), imageIndex);
+	RecordCommandBuffer(commandBuffers.at(currentFrame), vertexBuffer, imageIndex);
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

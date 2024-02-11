@@ -70,11 +70,7 @@ inline std::string GetBinaryPath(const char* filepath)
 	const auto extension = ".spv";
 
 	const std::string fpath(filepath);
-
-	const size_t pos_1 = fpath.find_last_of('/');
-	const size_t pos_2 = fpath.find('.', pos_1);
-
-	const std::string name = fpath.substr(pos_1 + 1, pos_2 - pos_1 - 1);
+	const std::string name = fpath.substr(fpath.find_last_of('/') + 1);
 
 	return binaryPath + name + extension;
 }
