@@ -63,11 +63,17 @@ struct Vertex
 	}
 };
 
-const std::vector<Vertex> vertices =
+const std::vector<Vertex> vertices = 
 {
-	{{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-	{{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
-	{{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}
+	{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+	{{ 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+	{{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},
+	{{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}}
+};
+
+const std::vector<uint16_t> indices =
+{
+	0, 1, 2, 2, 3, 0
 };
 
 void CreateInstance(bool enableValidationLayers);
@@ -120,13 +126,15 @@ void CreateCommandPool(const VkPhysicalDevice& physicalDevice, const VkDevice& l
 void DestroyCommandPool(const VkDevice& device);
 
 void CreateCommandBuffers(const VkDevice& device);
-void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const VkBuffer& vertexBuffer, uint32_t imageIndex);
+void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const std::array<VkBuffer, 2>& drawBuffers, uint32_t imageIndex);
 
 void CreateBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkSharingMode sharingMode, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 void CreateVertexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
+void CreateIndexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
 void CopyBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const VkBuffer& srcBuffer, const VkBuffer& dstBuffer, VkDeviceSize size);
-void DestroyVertexBuffer(const VkDevice& device);
+void DestroyVertexIndexBuffers(const VkDevice& device);
 const VkBuffer& GetVertexBuffer();
+const VkBuffer& GetIndexBuffer();
 uint32_t FindMemoryType(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
@@ -135,7 +143,7 @@ VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, c
 void CreateSyncObjects(const VkDevice& device);
 void DestroySyncObjects(const VkDevice& device);
 
-void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const VkBuffer& vertexBuffer);
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const std::array<VkBuffer, 2>& drawBuffers);
 
 /**
  * \brief A Debug Callback function

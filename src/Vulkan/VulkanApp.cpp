@@ -38,6 +38,7 @@ void VulkanApp::InitApp()
 	CreateFramebuffers(logicalDevice);
 	CreateCommandPool(physicalDevice, logicalDevice);
 	CreateVertexBuffer(physicalDevice, logicalDevice);
+	CreateIndexBuffer(physicalDevice, logicalDevice);
 	CreateCommandBuffers(logicalDevice);
 	CreateSyncObjects(logicalDevice);
 }
@@ -49,12 +50,16 @@ void VulkanApp::UpdateApp()
 
 	const auto& graphicsQueue = GetGraphicsQueue();
 	const auto& presentQueue = GetPresentationQueue();
+
 	const auto& vertexBuffer = GetVertexBuffer();
+	const auto& indexBuffer = GetIndexBuffer();
+
+	const std::array drawBuffers = { vertexBuffer, indexBuffer };
 
 	while (!CanCloseWindow(m_window))
 	{
 		UpdateWindow();
-		DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue, vertexBuffer);
+		DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue, drawBuffers);
 	}
 
 	vkDeviceWaitIdle(logicalDevice);
@@ -65,7 +70,7 @@ void VulkanApp::CleanupApp()
 	const auto& logicalDevice = GetLogicalDevice();
 
 	CleanupSwapchain(logicalDevice);
-	DestroyVertexBuffer(logicalDevice);
+	DestroyVertexIndexBuffers(logicalDevice);
 	DestroyGraphicsPipeline(logicalDevice);
 	DestroyRenderPass(logicalDevice);
 	DestroySyncObjects(logicalDevice);

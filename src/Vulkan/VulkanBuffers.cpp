@@ -1,7 +1,10 @@
 #include "VulkanBackend.hpp"
 
 VkBuffer vertexBuffer = VK_NULL_HANDLE;
+VkBuffer indexBuffer = VK_NULL_HANDLE;
+
 VkDeviceMemory vertexBufferMemory = VK_NULL_HANDLE;
+VkDeviceMemory indexBufferMemory = VK_NULL_HANDLE;
 
 void CreateBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const VkDeviceSize size, const VkBufferUsageFlags usage, const VkSharingMode sharingMode, const VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
@@ -53,6 +56,28 @@ void CreateVertexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& 
 
 	CreateBuffer(physicalDevice, logicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_SHARING_MODE_CONCURRENT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
 	CopyBuffer(physicalDevice, logicalDevice, stagingBuffer, vertexBuffer, bufferSize);
+
+	vkDestroyBuffer(logicalDevice, stagingBuffer, nullptr);
+	vkFreeMemory(logicalDevice, stagingBufferMemory, nullptr);
+}
+
+void CreateIndexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice)
+{
+	const VkDeviceSize bufferSize = sizeof(indices.at(0)) * indices.size();
+
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+
+	CreateBuffer(physicalDevice, logicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_SHARING_MODE_CONCURRENT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+	void* data = nullptr;
+
+	vkMapMemory(logicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+	memcpy(data, indices.data(), bufferSize);
+	vkUnmapMemory(logicalDevice, stagingBufferMemory);
+
+	CreateBuffer(physicalDevice, logicalDevice, bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_SHARING_MODE_CONCURRENT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+	CopyBuffer(physicalDevice, logicalDevice, stagingBuffer, indexBuffer, bufferSize);
 
 	vkDestroyBuffer(logicalDevice, stagingBuffer, nullptr);
 	vkFreeMemory(logicalDevice, stagingBufferMemory, nullptr);
@@ -114,15 +139,23 @@ void CopyBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalD
 	vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
 }
 
-void DestroyVertexBuffer(const VkDevice& device)
+void DestroyVertexIndexBuffers(const VkDevice& device)
 {
 	vkDestroyBuffer(device, vertexBuffer, nullptr);
 	vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+	vkDestroyBuffer(device, indexBuffer, nullptr);
+	vkFreeMemory(device, indexBufferMemory, nullptr);
 }
 
 const VkBuffer& GetVertexBuffer()
 {
 	return vertexBuffer;
+}
+
+const VkBuffer& GetIndexBuffer()
+{
+	return indexBuffer;
 }
 
 uint32_t FindMemoryType(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const uint32_t typeFilter, const VkMemoryPropertyFlags properties)

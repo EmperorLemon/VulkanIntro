@@ -484,7 +484,7 @@ void CreateCommandBuffers(const VkDevice& device)
 		throw std::runtime_error("Failed to allocate command buffers!");
 }
 
-void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const VkBuffer& vertexBuffer, const uint32_t imageIndex)
+void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const std::array<VkBuffer, 2>& drawBuffers, const uint32_t imageIndex)
 {
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -521,11 +521,12 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const VkBuffer& verte
 		scissor.extent = swapchainExtent;
 		vkCmdSetScissor(cmdBuffer, 0, 1, &scissor);
 
-		const VkBuffer vertexBuffers[] = { vertexBuffer };
+		const VkBuffer vertexBuffers[] = { drawBuffers.at(0) };
 		constexpr VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(cmdBuffer, 0, 1, vertexBuffers, offsets);
+		vkCmdBindIndexBuffer(cmdBuffer, drawBuffers.at(1), 0, VK_INDEX_TYPE_UINT16);
 
-		vkCmdDraw(cmdBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+		vkCmdDrawIndexed(cmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 	vkCmdEndRenderPass(cmdBuffer);
 
 	if (vkEndCommandBuffer(cmdBuffer) != VK_SUCCESS)
@@ -566,7 +567,7 @@ void DestroySyncObjects(const VkDevice& device)
 	}
 }
 
-void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const VkBuffer& vertexBuffer)
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const std::array<VkBuffer, 2>& drawBuffers)
 {
 	vkWaitForFences(logicalDevice, 1, &inFlightFences.at(currentFrame), VK_TRUE, UINT64_MAX);
 
@@ -586,7 +587,7 @@ void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDe
 	vkResetFences(logicalDevice, 1, &inFlightFences.at(currentFrame));
 
 	vkResetCommandBuffer(commandBuffers.at(currentFrame), 0);
-	RecordCommandBuffer(commandBuffers.at(currentFrame), vertexBuffer, imageIndex);
+	RecordCommandBuffer(commandBuffers.at(currentFrame), drawBuffers, imageIndex);
 
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
