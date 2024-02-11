@@ -9,13 +9,6 @@ constexpr bool enableValidationLayers = false;
 constexpr bool enableValidationLayers = true;
 #endif
 
-const std::vector<Vertex> vertices =
-{
-	{{ 0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-	{{ 0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}},
-	{{-0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}}
-};
-
 void VulkanApp::Run()
 {
 	m_window = { 800, 600 };
