@@ -17,8 +17,9 @@ struct QueueFamilyIndices
 {
 	std::optional<uint32_t> graphicsFamily;
 	std::optional<uint32_t> presentFamily;
+	std::optional<uint32_t> transferFamily;
 
-	[[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value() && presentFamily.has_value(); }
+	[[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value() && presentFamily.has_value() && transferFamily.has_value(); }
 };
 
 struct SwapChainSupportDetails
@@ -89,6 +90,7 @@ bool IsDeviceSuitable(const VkPhysicalDevice& device);
 QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
 const VkQueue& GetGraphicsQueue();
 const VkQueue& GetPresentationQueue();
+const VkQueue& GetTransferQueue();
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window);
 void DestroyWindowSurface(const VkInstance& instance);
@@ -120,7 +122,9 @@ void DestroyCommandPool(const VkDevice& device);
 void CreateCommandBuffers(const VkDevice& device);
 void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const VkBuffer& vertexBuffer, uint32_t imageIndex);
 
-void CreateVertexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const std::vector<Vertex>& vertices);
+void CreateBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkSharingMode sharingMode, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+void CreateVertexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
+void CopyBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const VkBuffer& srcBuffer, const VkBuffer& dstBuffer, VkDeviceSize size);
 void DestroyVertexBuffer(const VkDevice& device);
 const VkBuffer& GetVertexBuffer();
 uint32_t FindMemoryType(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);

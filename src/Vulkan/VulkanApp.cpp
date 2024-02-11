@@ -37,7 +37,7 @@ void VulkanApp::InitApp()
 	CreateGraphicsPipeline(logicalDevice);
 	CreateFramebuffers(logicalDevice);
 	CreateCommandPool(physicalDevice, logicalDevice);
-	CreateVertexBuffer(physicalDevice, logicalDevice, vertices);
+	CreateVertexBuffer(physicalDevice, logicalDevice);
 	CreateCommandBuffers(logicalDevice);
 	CreateSyncObjects(logicalDevice);
 }

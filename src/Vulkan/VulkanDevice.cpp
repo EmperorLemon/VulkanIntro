@@ -7,6 +7,7 @@ VkDevice logicalDevice = VK_NULL_HANDLE;
 
 VkQueue graphicsQueue = VK_NULL_HANDLE;
 VkQueue presentQueue = VK_NULL_HANDLE;
+VkQueue transferQueue = VK_NULL_HANDLE;
 
 void SelectPhysicalDevice(const VkInstance& instance)
 {
@@ -37,7 +38,7 @@ void CreateLogicalDevice(const bool enableValidationLayers)
 	const QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	std::set uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+	std::set uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value(), indices.transferFamily.value() };
 
 	float queuePriority = 1.0f;
 
@@ -53,7 +54,7 @@ void CreateLogicalDevice(const bool enableValidationLayers)
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	const VkPhysicalDeviceFeatures deviceFeatures = {};
+	constexpr VkPhysicalDeviceFeatures deviceFeatures = {};
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -81,6 +82,7 @@ void CreateLogicalDevice(const bool enableValidationLayers)
 
 	vkGetDeviceQueue(logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue);
 	vkGetDeviceQueue(logicalDevice, indices.presentFamily.value(), 0, &presentQueue);
+	vkGetDeviceQueue(logicalDevice, indices.transferFamily.value(), 0, &transferQueue);
 }
 
 void DestroyLogicalDevice()
@@ -138,6 +140,9 @@ QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device)
 		if (presentSupport)
 			indices.presentFamily = i;
 
+		if (queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT && !(queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT))
+			indices.transferFamily = i;
+
 		if (indices.IsComplete())
 			break;
 
@@ -155,4 +160,9 @@ const VkQueue& GetGraphicsQueue()
 const VkQueue& GetPresentationQueue()
 {
 	return presentQueue;
+}
+
+const VkQueue& GetTransferQueue()
+{
+	return transferQueue;
 }
