@@ -27,16 +27,3 @@ VkPipelineShaderStageCreateInfo CreateShaderStage(const VkShaderStageFlagBits st
 
 	return shaderStageInfo;
 }
-
-void CompileShader()
-{
-	//ReadFile(vsPath, vs_txt);
-
-	//PreprocessShader(vsPath, shaderc_glsl_vertex_shader,   vs_txt);
-
-	//const std::string vs_asm = CompileFileToAssembly(vsPath, shaderc_glsl_vertex_shader,   vs_txt);
-
-	//CompileFile(vsPath, shaderc_glsl_vertex_shader, vs_txt, vs_asm, vs_spv);
-
-	//WriteFile("assets/shaders/binaries/vert.spv", vs_spv);
-}

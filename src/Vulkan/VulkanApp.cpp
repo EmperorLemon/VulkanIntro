@@ -1,6 +1,8 @@
 #include "VulkanApp.hpp"
 #include "VulkanBackend.hpp"
 
+#include "VulkanUtils.hpp"
+
 #ifdef NDEBUG
 constexpr bool enableValidationLayers = false;
 #else

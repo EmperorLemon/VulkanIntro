@@ -5,8 +5,13 @@
 #include <vector>
 #include <iostream> // TODO: Remove this
 #include <optional>
+#include <array>
 
 #include <vulkan/vulkan.h>
+
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+
 
 struct QueueFamilyIndices
 {
@@ -21,6 +26,40 @@ struct SwapChainSupportDetails
 	VkSurfaceCapabilitiesKHR capabilities; // Basic surface capabilities (min/max number of images in swap chain, min/max width and height of images)
 	std::vector<VkSurfaceFormatKHR> formats; // Surface formats (pixel format, color space)
 	std::vector<VkPresentModeKHR> presentModes; // Available presentation modes
+};
+
+struct Vertex
+{
+	glm::vec2 position;
+	glm::vec3 color;
+
+	static VkVertexInputBindingDescription GetBindingDescription()
+	{
+		VkVertexInputBindingDescription bindingDescription = {};
+
+		bindingDescription.binding = 0;
+		bindingDescription.stride = sizeof(Vertex);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		return bindingDescription;
+	}
+
+	static std::array<VkVertexInputAttributeDescription, 2> GetAttributeDescriptions()
+	{
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
+
+		attributeDescriptions.at(0).binding = 0;
+		attributeDescriptions.at(0).location = 0;
+		attributeDescriptions.at(0).format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions.at(0).offset = offsetof(Vertex, position);
+
+		attributeDescriptions.at(1).binding = 0;
+		attributeDescriptions.at(1).location = 1;
+		attributeDescriptions.at(1).format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions.at(1).offset = offsetof(Vertex, color);
+
+		return attributeDescriptions;
+	}
 };
 
 void CreateInstance(bool enableValidationLayers);

@@ -249,8 +249,8 @@ void CreateGraphicsPipeline(const VkDevice& device)
 {
 	std::string vs_src, fs_src;
 
-	ReadFile("assets/shaders/binaries/vert.spv", vs_src);
-	ReadFile("assets/shaders/binaries/frag.spv", fs_src);
+	ReadShader("assets/shaders/source/shader.vert", shaderc_glsl_vertex_shader, vs_src);
+	ReadShader("assets/shaders/source/shader.frag", shaderc_glsl_fragment_shader, fs_src);
 
 	const VkShaderModule& vs_module = CreateShaderModule(device, vs_src);
 	const VkShaderModule& fs_module = CreateShaderModule(device, fs_src);
@@ -260,8 +260,13 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	VkPipelineVertexInputStateCreateInfo vertexInput = {};
 	vertexInput.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-	vertexInput.vertexBindingDescriptionCount = 0;
-	vertexInput.vertexAttributeDescriptionCount = 0;
+	const auto bindingDescription = Vertex::GetBindingDescription();
+	const auto attributeDescriptions = Vertex::GetAttributeDescriptions();
+
+	vertexInput.vertexBindingDescriptionCount = 1;
+	vertexInput.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInput.pVertexBindingDescriptions = &bindingDescription;
+	vertexInput.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
