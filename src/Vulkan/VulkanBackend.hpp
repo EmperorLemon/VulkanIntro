@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Window/Window.hpp"
+#include "Logger/Logger.hpp"
 
 #include <vector>
-#include <iostream> // TODO: Remove this
 #include <optional>
 #include <array>
 
@@ -84,7 +84,7 @@ struct UniformBufferObject
 	glm::mat4 PROJECTION;
 };
 
-void CreateInstance(bool enableValidationLayers);
+void CreateInstance(bool enableValidationLayers, Logger& logger);
 void DestroyInstance();
 const VkInstance& GetInstance();
 
@@ -176,15 +176,10 @@ void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDe
  * \param userData a pointer that allows for user-generated data to be passed through the function\n
  * \return a boolean
  */
-static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* userData)
-{
-	std::cerr << "Validation Layer: " << pCallbackData->pMessage << std::endl;
+VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* userData);
 
-	return VK_FALSE;
-}
-
-void SetupDebugMessenger(VkInstance instance, bool enableValidationLayers);
-void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+void SetupDebugMessenger(VkInstance instance, bool enableValidationLayers, Logger& logger);
+void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo, void* userData);
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 void DestroyDebugUtilsMessengerEXT(VkInstance instance, const VkAllocationCallbacks* pAllocator);

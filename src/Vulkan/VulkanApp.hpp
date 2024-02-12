@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Logger/Logger.hpp"
 #include "Window/Window.hpp"
 
 class VulkanApp
@@ -12,4 +13,5 @@ private:
 	void CleanupApp();
 
 	Window m_window;
+	Logger m_logger;
 };

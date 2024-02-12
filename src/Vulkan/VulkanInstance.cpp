@@ -4,7 +4,7 @@
 
 VkInstance instance = VK_NULL_HANDLE;
 
-void CreateInstance(const bool enableValidationLayers)
+void CreateInstance(const bool enableValidationLayers, Logger& logger)
 {
 	const auto& validationLayers = GetValidationLayers();
 
@@ -39,7 +39,7 @@ void CreateInstance(const bool enableValidationLayers)
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
 		createInfo.ppEnabledLayerNames = validationLayers.data();
 
-		PopulateDebugMessengerCreateInfo(debugCreateInfo);
+		PopulateDebugMessengerCreateInfo(debugCreateInfo, &logger);
 		createInfo.pNext = &debugCreateInfo;
 	}
 	else
