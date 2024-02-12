@@ -40,16 +40,16 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 	switch (messageSeverity)
 	{
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-		logger->Log("Validation Layer: {0}", pCallbackData->pMessage);
+		logger->Log("{0}", pCallbackData->pMessage);
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-		logger->Info("Validation Layer: {0}", pCallbackData->pMessage);
+		logger->Info("INFO: {0}", pCallbackData->pMessage);
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-		logger->Warn("Validation Layer: {0}", pCallbackData->pMessage);
+		logger->Warn("WARNING: {0}", pCallbackData->pMessage);
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-		logger->Error("Validation Layer: {0}", pCallbackData->pMessage);
+		logger->Error("ERROR: {0}", pCallbackData->pMessage);
 		break;
 	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
 		break;
