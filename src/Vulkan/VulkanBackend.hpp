@@ -9,9 +9,9 @@
 
 #include <vulkan/vulkan.h>
 
-#include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-
+#include <glm/vec2.hpp>
 
 struct QueueFamilyIndices
 {
@@ -28,6 +28,8 @@ struct SwapChainSupportDetails
 	std::vector<VkSurfaceFormatKHR> formats; // Surface formats (pixel format, color space)
 	std::vector<VkPresentModeKHR> presentModes; // Available presentation modes
 };
+
+constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 struct Vertex
 {
@@ -70,10 +72,16 @@ const std::vector<Vertex> vertices =
 	{{ 0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}},
 	{{-0.5f,  0.5f}, {1.0f, 1.0f, 1.0f}}
 };
-
 const std::vector<uint16_t> indices =
 {
 	0, 1, 2, 2, 3, 0
+};
+
+struct UniformBufferObject
+{
+	glm::mat4 MODEL;
+	glm::mat4 VIEW;
+	glm::mat4 PROJECTION;
 };
 
 void CreateInstance(bool enableValidationLayers);
@@ -131,14 +139,17 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const std::array<VkBu
 void CreateBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkSharingMode sharingMode, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 void CreateVertexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
 void CreateIndexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
+void CreateUniformBuffers(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice);
 void CopyBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const VkBuffer& srcBuffer, const VkBuffer& dstBuffer, VkDeviceSize size);
-void DestroyVertexIndexBuffers(const VkDevice& device);
+void DestroyBuffers(const VkDevice& device);
 const VkBuffer& GetVertexBuffer();
 const VkBuffer& GetIndexBuffer();
 uint32_t FindMemoryType(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
 VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, const VkShaderModule& module);
+void CreateDescriptorSetLayout(const VkDevice& device, VkDescriptorSetLayout& layout);
+void DestroyDescriptorSetLayout(const VkDevice& device);
 
 void CreateSyncObjects(const VkDevice& device);
 void DestroySyncObjects(const VkDevice& device);

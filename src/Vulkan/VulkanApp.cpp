@@ -39,6 +39,7 @@ void VulkanApp::InitApp()
 	CreateCommandPool(physicalDevice, logicalDevice);
 	CreateVertexBuffer(physicalDevice, logicalDevice);
 	CreateIndexBuffer(physicalDevice, logicalDevice);
+	CreateUniformBuffers(physicalDevice, logicalDevice);
 	CreateCommandBuffers(logicalDevice);
 	CreateSyncObjects(logicalDevice);
 }
@@ -70,9 +71,10 @@ void VulkanApp::CleanupApp()
 	const auto& logicalDevice = GetLogicalDevice();
 
 	CleanupSwapchain(logicalDevice);
-	DestroyVertexIndexBuffers(logicalDevice);
 	DestroyGraphicsPipeline(logicalDevice);
 	DestroyRenderPass(logicalDevice);
+	DestroyBuffers(logicalDevice);
+	DestroyDescriptorSetLayout(logicalDevice);
 	DestroySyncObjects(logicalDevice);
 	DestroyCommandPool(logicalDevice);
 	DestroyLogicalDevice();

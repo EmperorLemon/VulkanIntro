@@ -11,7 +11,6 @@
 //
 //#include <vulkan/vulkan_win32.h>
 
-constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 uint32_t currentFrame = 0;
 
 VkSurfaceKHR surface = VK_NULL_HANDLE;
@@ -25,6 +24,7 @@ std::vector<VkImageView> swapchainImageViews;
 std::vector<VkFramebuffer> swapchainFramebuffers;
 
 VkRenderPass renderPass = VK_NULL_HANDLE;
+VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
 VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 VkPipeline graphicsPipeline = VK_NULL_HANDLE;
 
@@ -247,6 +247,8 @@ VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, const 
 
 void CreateGraphicsPipeline(const VkDevice& device)
 {
+	CreateDescriptorSetLayout(device, descriptorSetLayout);
+
 	std::string vs_src, fs_src;
 
 	ReadShader("assets/shaders/source/shader.vert", shaderc_glsl_vertex_shader, vs_src);
@@ -322,6 +324,9 @@ void CreateGraphicsPipeline(const VkDevice& device)
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
 
 	if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create pipeline layout!");
@@ -418,6 +423,11 @@ void CreateRenderPass(const VkDevice& device)
 void DestroyRenderPass(const VkDevice& device)
 {
 	vkDestroyRenderPass(device, renderPass, nullptr);
+}
+
+void DestroyDescriptorSetLayout(const VkDevice& device)
+{
+	vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 }
 
 void CreateFramebuffers(const VkDevice& device)

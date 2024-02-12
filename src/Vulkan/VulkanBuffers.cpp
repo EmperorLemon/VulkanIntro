@@ -6,6 +6,10 @@ VkBuffer indexBuffer = VK_NULL_HANDLE;
 VkDeviceMemory vertexBufferMemory = VK_NULL_HANDLE;
 VkDeviceMemory indexBufferMemory = VK_NULL_HANDLE;
 
+std::vector<VkBuffer> uniformBuffers;
+std::vector<VkDeviceMemory> uniformBuffersMemory;
+std::vector<void*> uniformBuffersMapped;
+
 void CreateBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const VkDeviceSize size, const VkBufferUsageFlags usage, const VkSharingMode sharingMode, const VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
 	const QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice);
@@ -83,6 +87,20 @@ void CreateIndexBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& l
 	vkFreeMemory(logicalDevice, stagingBufferMemory, nullptr);
 }
 
+void CreateUniformBuffers(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice)
+{
+	uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+	uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+	uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		constexpr VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+		CreateBuffer(physicalDevice, logicalDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
+		vkMapMemory(logicalDevice, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
+	}
+}
+
 void CopyBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const VkBuffer& srcBuffer, const VkBuffer& dstBuffer, const VkDeviceSize size)
 {
 	const QueueFamilyIndices queueFamilyIndices = FindQueueFamilies(physicalDevice);
@@ -139,8 +157,14 @@ void CopyBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalD
 	vkDestroyCommandPool(logicalDevice, commandPool, nullptr);
 }
 
-void DestroyVertexIndexBuffers(const VkDevice& device)
+void DestroyBuffers(const VkDevice& device)
 {
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+	{
+		vkDestroyBuffer(device, uniformBuffers[i], nullptr);
+		vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+	}
+
 	vkDestroyBuffer(device, vertexBuffer, nullptr);
 	vkFreeMemory(device, vertexBufferMemory, nullptr);
 
