@@ -30,52 +30,55 @@ void VulkanApp::InitApp()
 	const auto& physicalDevice = GetPhysicalDevice();
 	const auto& logicalDevice = GetLogicalDevice();
 
-	//CreateSwapchain(physicalDevice, logicalDevice, m_window);
-	//CreateImageViews(logicalDevice);
-	//CreateRenderPass(logicalDevice);
-	//CreateGraphicsPipeline(logicalDevice);
-	//CreateFramebuffers(logicalDevice);
-	//CreateCommandPool(physicalDevice, logicalDevice);
-	//CreateVertexBuffer(physicalDevice, logicalDevice);
-	//CreateIndexBuffer(physicalDevice, logicalDevice);
-	//CreateUniformBuffers(physicalDevice, logicalDevice);
-	//CreateCommandBuffers(logicalDevice);
-	//CreateSyncObjects(logicalDevice);
+	CreateSwapchain(physicalDevice, logicalDevice, m_window);
+	CreateImageViews(logicalDevice);
+	CreateRenderPass(logicalDevice);
+	CreateGraphicsPipeline(logicalDevice);
+	CreateFramebuffers(logicalDevice);
+	CreateCommandPool(physicalDevice, logicalDevice);
+	CreateVertexBuffer(physicalDevice, logicalDevice);
+	CreateIndexBuffer(physicalDevice, logicalDevice);
+	CreateUniformBuffers(physicalDevice, logicalDevice);
+	CreateCommandBuffers(logicalDevice);
+	CreateSyncObjects(logicalDevice);
 }
 
 void VulkanApp::UpdateApp()
 {
-	//const auto& physicalDevice = GetPhysicalDevice();
-	//const auto& logicalDevice = GetLogicalDevice();
+	const auto& physicalDevice = GetPhysicalDevice();
+	const auto& logicalDevice = GetLogicalDevice();
 
-	//const auto& graphicsQueue = GetGraphicsQueue();
-	//const auto& presentQueue = GetPresentationQueue();
+	const auto& graphicsQueue = GetGraphicsQueue();
+	const auto& presentQueue = GetPresentationQueue();
 
-	//const auto& vertexBuffer = GetVertexBuffer();
-	//const auto& indexBuffer = GetIndexBuffer();
+	const auto& vertexBuffer = GetVertexBuffer();
+	const auto& indexBuffer = GetIndexBuffer();
+	const auto& uniformBuffers = GetUniformBuffers();
 
-	//const std::array drawBuffers = { vertexBuffer, indexBuffer };
+	const std::array drawBuffers = { vertexBuffer, indexBuffer };
+	const auto& mappedUniformBuffers = GetMappedUniformBuffers();
 
 	while (!CanCloseWindow(m_window))
 	{
 		UpdateWindow();
-		//DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue, drawBuffers);
+		DrawFrame(physicalDevice, logicalDevice, m_window, graphicsQueue, presentQueue, drawBuffers, uniformBuffers, mappedUniformBuffers);
 	}
 
-	//vkDeviceWaitIdle(logicalDevice);
+	vkDeviceWaitIdle(logicalDevice);
 }
 
 void VulkanApp::CleanupApp()
 {
 	const auto& logicalDevice = GetLogicalDevice();
 
-	//CleanupSwapchain(logicalDevice);
-	//DestroyGraphicsPipeline(logicalDevice);
-	//DestroyRenderPass(logicalDevice);
-	//DestroyBuffers(logicalDevice);
-	//DestroyDescriptorSetLayout(logicalDevice);
-	//DestroySyncObjects(logicalDevice);
-	//DestroyCommandPool(logicalDevice);
+	CleanupSwapchain(logicalDevice);
+	DestroyGraphicsPipeline(logicalDevice);
+	DestroyRenderPass(logicalDevice);
+	DestroyBuffers(logicalDevice);
+	DestroyDescriptorPool(logicalDevice);
+	DestroyDescriptorSetLayout(logicalDevice);
+	DestroySyncObjects(logicalDevice);
+	DestroyCommandPool(logicalDevice);
 	DestroyLogicalDevice();
 
 	const auto& instance = GetInstance();

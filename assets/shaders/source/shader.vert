@@ -1,6 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform Transform
+layout(set = 0, binding = 0) uniform Transform
 {
 	mat4 MODEL;
 	mat4 VIEW;

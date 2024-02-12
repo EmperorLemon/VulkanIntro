@@ -4,12 +4,15 @@
 #include <algorithm>
 #include <limits>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 //#define GLFW_EXPOSE_NATIVE_WIN32
 //#include <GLFW/glfw3native.h>
 //
 //#include <vulkan/vulkan_win32.h>
+
 
 uint32_t currentFrame = 0;
 
@@ -24,9 +27,12 @@ std::vector<VkImageView> swapchainImageViews;
 std::vector<VkFramebuffer> swapchainFramebuffers;
 
 VkRenderPass renderPass = VK_NULL_HANDLE;
-VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
 VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 VkPipeline graphicsPipeline = VK_NULL_HANDLE;
+
+VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
+VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+std::vector<VkDescriptorSet> descriptorSets;
 
 VkCommandPool commandPool = VK_NULL_HANDLE;
 std::vector<VkCommandBuffer> commandBuffers;
@@ -34,6 +40,8 @@ std::vector<VkCommandBuffer> commandBuffers;
 std::vector<VkSemaphore> imageAvailableSemaphores;
 std::vector<VkSemaphore> renderFinishedSemaphores;
 std::vector<VkFence> inFlightFences;
+
+const glm::mat4 VIEW_MATRIX = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 void CreateWindowSurface(const VkInstance& instance, const Window& window)
 {
@@ -291,7 +299,7 @@ void CreateGraphicsPipeline(const VkDevice& device)
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizer.lineWidth = 1.0f;
 	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 
 	VkPipelineMultisampleStateCreateInfo multisampling = {};
@@ -479,8 +487,16 @@ void DestroyCommandPool(const VkDevice& device)
 	vkDestroyCommandPool(device, commandPool, nullptr);
 }
 
+void DestroyDescriptorPool(const VkDevice& device)
+{
+	vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+}
+
 void CreateCommandBuffers(const VkDevice& device)
 {
+	CreateDescriptorPool(device, descriptorPool);
+	CreateDescriptorSets(device, GetUniformBuffers(), descriptorSetLayout, descriptorPool, descriptorSets);
+
 	commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
 	VkCommandBufferAllocateInfo allocInfo = {};
@@ -535,7 +551,8 @@ void RecordCommandBuffer(const VkCommandBuffer& cmdBuffer, const std::array<VkBu
 		constexpr VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(cmdBuffer, 0, 1, vertexBuffers, offsets);
 		vkCmdBindIndexBuffer(cmdBuffer, drawBuffers.at(1), 0, VK_INDEX_TYPE_UINT16);
-
+		vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets.at(currentFrame), 0, nullptr);
+		
 		vkCmdDrawIndexed(cmdBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 	vkCmdEndRenderPass(cmdBuffer);
 
@@ -577,7 +594,20 @@ void DestroySyncObjects(const VkDevice& device)
 	}
 }
 
-void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const std::array<VkBuffer, 2>& drawBuffers)
+void UpdateUniformBuffers(const std::vector<void*>& mappedUniformBuffers, const uint32_t imageIndex)
+{
+	UniformBufferObject ubo = {};
+
+	ubo.MODEL = glm::mat4(1.0f);
+	ubo.VIEW = VIEW_MATRIX;
+	ubo.PROJECTION = glm::perspective(glm::radians(45.0f), static_cast<float>(swapchainExtent.width) / static_cast<float>(swapchainExtent.height), 0.1f, 10.0f);
+
+	ubo.PROJECTION[1][1] *= -1;
+
+	memcpy(mappedUniformBuffers.at(imageIndex), &ubo, sizeof(UniformBufferObject));
+}
+
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const std::array<VkBuffer, 2>& drawBuffers, const std::vector<VkBuffer>& uniformBuffers, const std::vector<void*>& mappedUniformBuffers)
 {
 	vkWaitForFences(logicalDevice, 1, &inFlightFences.at(currentFrame), VK_TRUE, UINT64_MAX);
 
@@ -593,6 +623,8 @@ void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDe
 
 	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 		throw std::runtime_error("Failed to acquire swapchain image!");
+
+	UpdateUniformBuffers(mappedUniformBuffers, imageIndex);
 
 	vkResetFences(logicalDevice, 1, &inFlightFences.at(currentFrame));
 

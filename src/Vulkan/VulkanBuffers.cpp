@@ -8,7 +8,7 @@ VkDeviceMemory indexBufferMemory = VK_NULL_HANDLE;
 
 std::vector<VkBuffer> uniformBuffers;
 std::vector<VkDeviceMemory> uniformBuffersMemory;
-std::vector<void*> uniformBuffersMapped;
+std::vector<void*> mappedUniformBuffers;
 
 void CreateBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const VkDeviceSize size, const VkBufferUsageFlags usage, const VkSharingMode sharingMode, const VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 {
@@ -91,13 +91,13 @@ void CreateUniformBuffers(const VkPhysicalDevice& physicalDevice, const VkDevice
 {
 	uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 	uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-	uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+	mappedUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
 		constexpr VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 		CreateBuffer(physicalDevice, logicalDevice, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_SHARING_MODE_EXCLUSIVE, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
-		vkMapMemory(logicalDevice, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
+		vkMapMemory(logicalDevice, uniformBuffersMemory[i], 0, bufferSize, 0, &mappedUniformBuffers[i]);
 	}
 }
 
@@ -180,6 +180,16 @@ const VkBuffer& GetVertexBuffer()
 const VkBuffer& GetIndexBuffer()
 {
 	return indexBuffer;
+}
+
+const std::vector<VkBuffer>& GetUniformBuffers()
+{
+	return uniformBuffers;
+}
+
+const std::vector<void*>& GetMappedUniformBuffers()
+{
+	return mappedUniformBuffers;
 }
 
 uint32_t FindMemoryType(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const uint32_t typeFilter, const VkMemoryPropertyFlags properties)

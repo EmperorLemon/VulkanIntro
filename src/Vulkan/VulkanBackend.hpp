@@ -9,9 +9,9 @@
 
 #include <vulkan/vulkan.h>
 
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec2.hpp>
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
 
 struct QueueFamilyIndices
 {
@@ -144,17 +144,22 @@ void CopyBuffer(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalD
 void DestroyBuffers(const VkDevice& device);
 const VkBuffer& GetVertexBuffer();
 const VkBuffer& GetIndexBuffer();
+const std::vector<VkBuffer>& GetUniformBuffers();
+const std::vector<void*>& GetMappedUniformBuffers();
 uint32_t FindMemoryType(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 VkShaderModule CreateShaderModule(const VkDevice& device, const std::string& bytecode);
 VkPipelineShaderStageCreateInfo CreateShaderStage(VkShaderStageFlagBits stage, const VkShaderModule& module);
 void CreateDescriptorSetLayout(const VkDevice& device, VkDescriptorSetLayout& layout);
 void DestroyDescriptorSetLayout(const VkDevice& device);
+void CreateDescriptorPool(const VkDevice& device, VkDescriptorPool& descriptorPool);
+void CreateDescriptorSets(const VkDevice& device, const std::vector<VkBuffer>& uniformBuffers, const VkDescriptorSetLayout& descriptorSetLayout, const VkDescriptorPool& descriptorPool, std::vector<VkDescriptorSet>& descriptorSets);
+void DestroyDescriptorPool(const VkDevice& device);
 
 void CreateSyncObjects(const VkDevice& device);
 void DestroySyncObjects(const VkDevice& device);
 
-void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const std::array<VkBuffer, 2>& drawBuffers);
+void DrawFrame(const VkPhysicalDevice& physicalDevice, const VkDevice& logicalDevice, const Window& window, const VkQueue& graphicsQueue, const VkQueue& presentQueue, const std::array<VkBuffer, 2>& drawBuffers, const std::vector<VkBuffer>& UniformBuffers, const std::vector<void*>& mappedUniformBuffers);
 
 /**
  * \brief A Debug Callback function
