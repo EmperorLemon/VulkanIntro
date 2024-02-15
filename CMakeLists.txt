@@ -27,6 +27,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE  ${PROJECT_BINARY_DIR}/lib)
 
 set(CMAKE_DEBUG_POSTFIX "")
 
+add_definitions(-D_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
+# add_definitions(-D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS)
+
 if (MSVC)
     string(REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 endif()
@@ -68,6 +71,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	glfw
     glm
     spdlog
+    LLGL
     ${Vulkan_LIBRARIES}
     Vulkan::shaderc_combined
 )
