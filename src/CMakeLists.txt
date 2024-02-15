@@ -11,19 +11,19 @@ src/Logger/Logger.cpp
 src/Window/Window.hpp
 src/Window/Window.cpp
 
-src/Vulkan/VulkanBackend.hpp
+src/Rendering/Vulkan/VulkanBackend.hpp
 
-src/Vulkan/VulkanInstance.cpp
-src/Vulkan/VulkanExtension.cpp
-src/Vulkan/VulkanGraphics.cpp
-src/Vulkan/VulkanBuffers.cpp
-src/Vulkan/VulkanShaders.cpp
-src/Vulkan/VulkanDevice.cpp
-src/Vulkan/VulkanDebug.cpp
+src/Rendering/Vulkan/VulkanInstance.cpp
+src/Rendering/Vulkan/VulkanExtension.cpp
+src/Rendering/Vulkan/VulkanGraphics.cpp
+src/Rendering/Vulkan/VulkanBuffers.cpp
+src/Rendering/Vulkan/VulkanShaders.cpp
+src/Rendering/Vulkan/VulkanDevice.cpp
+src/Rendering/Vulkan/VulkanDebug.cpp
 
-src/Vulkan/VulkanUtils.hpp
+src/Rendering/Vulkan/VulkanUtils.hpp
 
-src/Vulkan/VulkanApp.hpp
-src/Vulkan/VulkanApp.cpp
+src/Rendering/Vulkan/VulkanApp.hpp
+src/Rendering/Vulkan/VulkanApp.cpp
 
 PARENT_SCOPE)
