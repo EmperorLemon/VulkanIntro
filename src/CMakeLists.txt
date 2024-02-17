@@ -11,6 +11,12 @@ src/Logger/Logger.cpp
 src/Window/Window.hpp
 src/Window/Window.cpp
 
+src/Rendering/LLGL/include/LLGLApp.hpp
+src/Rendering/LLGL/include/LLGLRenderer.hpp
+
+src/Rendering/LLGL/LLGLRenderer.cpp
+src/Rendering/LLGL/LLGLApp.cpp
+
 src/Rendering/Vulkan/VulkanBackend.hpp
 
 src/Rendering/Vulkan/VulkanInstance.cpp
