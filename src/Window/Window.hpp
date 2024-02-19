@@ -14,6 +14,7 @@ struct Window
 	std::string title;
 
 	void* window = nullptr;
+	void* handle = nullptr; // native window handle
 };
 
 bool PollEvents(const Window& window);

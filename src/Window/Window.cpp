@@ -1,6 +1,8 @@
 #include "Window.hpp"
 
 #include <GLFW/glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <GLFW/glfw3native.h>
 
 Window::Window(const uint32_t width, const uint32_t height, const char* title) : width(width), height(height), title(title)
 {
@@ -10,6 +12,7 @@ Window::Window(const uint32_t width, const uint32_t height, const char* title) :
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, nullptr, nullptr);
+	handle = glfwGetWin32Window(static_cast<GLFWwindow*>(window));
 
 	glfwSetWindowUserPointer(static_cast<GLFWwindow*>(window), this);
 

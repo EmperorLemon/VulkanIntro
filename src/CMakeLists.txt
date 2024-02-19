@@ -6,6 +6,9 @@ src/main.cpp
 
 ${RENDERING}
 
+src/FileSystem/FileSystem.hpp
+src/FileSystem/FileSystem.cpp
+
 src/Logger/Logger.hpp
 src/Logger/Logger.cpp
 

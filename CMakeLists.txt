@@ -63,6 +63,14 @@ add_subdirectory(src)
 # Add source to this project's executable.
 add_executable (${PROJECT_NAME} ${SOURCES})
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_definitions(DEBUG)
+    add_compile_definitions(LLGL_ENABLE_DEBUG_LAYER)
+    add_compile_definitions(LLGL_ENABLE_SPIRV_REFLECT)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+endif()
+
+
 add_subdirectory(lib)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
