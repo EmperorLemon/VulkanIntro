@@ -28,19 +28,10 @@ public:
 	void Init();
 	void Update();
 private:
-	void init_renderer();
-	void init_surface();
-	void init_swapchain();
-	void init_pipeline();
-
-	void update_frame();
-
-#ifdef DESTROY_ALL
-	void destroy_surface();
-	void destroy_swapchain();
-	void destroy_pipeline();
-	void destroy_buffers();
-#endif
+	void init();
+	void update();
+	void cleanup();
 private:
 	Logger m_logger;
+	Window m_window;
 };

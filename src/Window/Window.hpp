@@ -17,5 +17,6 @@ struct Window
 	void* handle = nullptr; // native window handle
 };
 
+void GetWindowSize(const Window& window, int& width, int& height);
 bool PollEvents(const Window& window);
 void DestroyWindow(const Window& window);
