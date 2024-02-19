@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(VulkanIntro)
 
-find_package(Vulkan COMPONENTS shaderc_combined SPIRV-Tools REQUIRED)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -65,8 +63,6 @@ add_executable (${PROJECT_NAME} ${SOURCES})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_compile_definitions(DEBUG)
-    add_compile_definitions(LLGL_ENABLE_DEBUG_LAYER)
-    add_compile_definitions(LLGL_ENABLE_SPIRV_REFLECT)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
@@ -79,9 +75,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	glfw
     glm
     spdlog
-    LLGL
-    ${Vulkan_LIBRARIES}
-    Vulkan::shaderc_combined
 )
 
 add_custom_command(TARGET VulkanIntro POST_BUILD

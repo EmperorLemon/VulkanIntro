@@ -23,15 +23,6 @@ private:
 	std::shared_ptr<T> m_ptr = nullptr;
 };
 
-struct RenderCommand
-{
-	LLGL::SwapChain* swapchain = nullptr;
-	LLGL::PipelineState* graphicsPipeline = nullptr;
-	LLGL::Buffer* vertexBuffer = nullptr;
-	LLGL::Buffer* indexBuffer = nullptr;
-	LLGL::CommandBuffer* cmdBuffer = nullptr;
-};
-
 class RenderEngine
 {
 public:
@@ -44,7 +35,7 @@ private:
 	void init_swapchain();
 	void init_pipeline();
 
-	void update_frame(const RenderCommand& command);
+	void update_frame();
 
 #ifdef DESTROY_ALL
 	void destroy_surface();
@@ -54,14 +45,4 @@ private:
 #endif
 private:
 	Logger m_logger;
-	LLGL::RenderingDebugger m_debugger;
-private:
-	LLGL::RenderSystemPtr m_renderer = nullptr;
-	void* m_swapchain = nullptr;
-	void* m_window = nullptr;
-	void* m_graphics = nullptr; // graphics pipeline state
-private:
-	void* m_vertexBuffer = nullptr;
-	void* m_indexBuffer = nullptr;
-	void* m_commandBuffer = nullptr;
 };
