@@ -29,9 +29,13 @@ public:
 	void Update();
 private:
 	void init();
+	void prepare();
 	void update();
 	void cleanup();
 private:
 	Logger m_logger;
 	Window m_window;
+
+private:
+	uint32_t m_frames = 0;
 };

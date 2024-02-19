@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(VulkanIntro)
 
+find_package(Vulkan COMPONENTS shaderc_combined SPIRV-Tools REQUIRED)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -75,6 +77,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glm
     spdlog
     bgfx
+    Vulkan::shaderc_combined
 )
 
 add_custom_command(TARGET VulkanIntro POST_BUILD
