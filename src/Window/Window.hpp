@@ -14,10 +14,7 @@ struct Window
 	std::string title;
 
 	void* window = nullptr;
-
-	static bool resized;
 };
 
-void UpdateWindow();
+bool PollEvents(const Window& window);
 void DestroyWindow(const Window& window);
-bool CanCloseWindow(const Window& window);
