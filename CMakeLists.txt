@@ -66,8 +66,14 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
-
 add_subdirectory(lib)
+
+# Tell BGFX if we're doing debug or release. Important!
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+	add_compile_definitions(BX_CONFIG_DEBUG=1)
+else()
+	add_compile_definitions(BX_CONFIG_DEBUG=0)
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
