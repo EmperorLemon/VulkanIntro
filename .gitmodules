@@ -7,3 +7,6 @@
 [submodule "lib/spdlog"]
 	path = lib/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "lib/bgfx.cmake"]
+	path = lib/bgfx.cmake
+	url = https://github.com/bkaradzic/bgfx.cmake

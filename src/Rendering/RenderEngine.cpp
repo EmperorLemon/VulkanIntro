@@ -2,6 +2,8 @@
 #include "RenderShader.hpp"
 #include "FileSystem/FileSystem.hpp"
 
+#include <bgfx/bgfx.h>
+
 void RenderEngine::Init()
 {
 	init_renderer();
