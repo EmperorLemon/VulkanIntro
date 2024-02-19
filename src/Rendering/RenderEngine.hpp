@@ -1,7 +1,5 @@
 #pragma once
 
-#include <LLGL/RenderSystem.h>
-
 #include "Logger/Logger.hpp"
 #include "Window/Window.hpp"
 
