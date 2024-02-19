@@ -6,6 +6,8 @@
 
 #include <stdexcept>
 
+bool Window::resized = false;
+
 Window::Window(const uint32_t width, const uint32_t height, const char* title) : width(width), height(height), title(title)
 {
 	if (!glfwInit())
@@ -15,6 +17,18 @@ Window::Window(const uint32_t width, const uint32_t height, const char* title) :
 
 	window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, nullptr, nullptr);
 	handle = glfwGetWin32Window(static_cast<GLFWwindow*>(window));
+
+	glfwSetWindowUserPointer(static_cast<GLFWwindow*>(window), this);
+
+	glfwSetFramebufferSizeCallback(static_cast<GLFWwindow*>(window), [](GLFWwindow* window_, const int width, const int height)
+		{
+			resized = true;
+		});
+}
+
+void GetFramebufferSize(const Window& window, int& width, int& height)
+{
+	glfwGetFramebufferSize(static_cast<GLFWwindow*>(window.window), &width, &height);
 }
 
 void GetWindowSize(const Window& window, int& width, int& height)

@@ -12,6 +12,9 @@ void RenderEngine::Init()
 
 void RenderEngine::Update()
 {
+	bgfx::setViewClear(0, BGFX_CLEAR_COLOR);
+	bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
+
 	while (PollEvents(m_window))
 	{
 		update();
@@ -36,7 +39,7 @@ void RenderEngine::init()
 	{
 		int width = 0, height = 0;
 
-		GetWindowSize(m_window, width, height);
+		GetFramebufferSize(m_window, width, height);
 
 		init.platformData.nwh  = m_window.handle;
 		init.resolution.width  = static_cast<uint32_t>(width);
@@ -66,6 +69,16 @@ void RenderEngine::init()
 
 void RenderEngine::update()
 {
+	if (Window::resized)
+	{
+		int width = 0, height = 0;
+		GetFramebufferSize(m_window, width, height);
+
+		bgfx::reset(static_cast<uint32_t>(width), static_cast<uint32_t>(height), BGFX_RESET_VSYNC);
+
+		Window::resized = false;
+	}
+
 	bgfx::touch(0);
 
 	bgfx::frame();

@@ -13,10 +13,14 @@ struct Window
 
 	std::string title;
 
+	static bool resized;
+
 	void* window = nullptr;
 	void* handle = nullptr; // native window handle
 };
 
+void GetFramebufferSize(const Window& window, int& width, int& height);
 void GetWindowSize(const Window& window, int& width, int& height);
+
 bool PollEvents(const Window& window);
 void DestroyWindow(const Window& window);
