@@ -18,9 +18,9 @@ Window::Window(const uint32_t width, const uint32_t height, const char* title) :
 
 	glfwSetFramebufferSizeCallback(static_cast<GLFWwindow*>(window), [](GLFWwindow* win, [[maybe_unused]] const int x, [[maybe_unused]] const int y)
 	{
-			[[maybe_unused]] const auto winptr = static_cast<Window*>(glfwGetWindowUserPointer(win));
+		[[maybe_unused]] const auto winptr = static_cast<Window*>(glfwGetWindowUserPointer(win));
 
-			resized = true;
+		resized = true;
 	});
 }
 
